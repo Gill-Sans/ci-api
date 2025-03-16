@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: capit-schedule
+server:
+  port: 8080
+
+axon:
+  axonserver:
+    servers: localhost:8124
