@@ -4,7 +4,6 @@ import com.capit.capitinteractions.domain.impl.checkin.commands.CreateCheckinCom
 import com.capit.capitinteractions.domain.impl.checkin.requests.CreateCheckinRequest;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,7 +12,6 @@ import java.util.UUID;
 @Service
 public class CheckinServiceImpl implements CheckinServcie {
     private final CommandGateway commandGateway;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public String createCheckin(CreateCheckinRequest request) {
@@ -25,8 +23,6 @@ public class CheckinServiceImpl implements CheckinServcie {
         );
 
         commandGateway.sendAndWait(command);
-
-        kafkaTemplate.send("checkin-details", checkinId.toString());
         return checkinId.toString();
     }
 }
