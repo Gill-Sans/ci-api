@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: capit-schedule
+  datasource:
+    url: jdbc:postgresql://localhost:5432/capit
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+server:
+  port: 8081
+
+axon:
+  axonserver:
+    servers: localhost:8124
+
+
+
