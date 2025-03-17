@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.config;
+package com.capit.capitinteractions.config.Kafka;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
