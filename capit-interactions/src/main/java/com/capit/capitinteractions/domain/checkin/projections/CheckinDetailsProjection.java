@@ -1,6 +1,6 @@
-package com.capit.capitinteractions.domain.impl.checkin.projections;
+package com.capit.capitinteractions.domain.checkin.projections;
 
-import com.capit.capitinteractions.domain.impl.checkin.events.CheckinCreatedEvent;
+import com.capit.capitinteractions.domain.checkin.events.CheckinCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;

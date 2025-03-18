@@ -1,7 +1,7 @@
-package com.capit.capitinteractions.domain.impl.checkin.aggregates;
+package com.capit.capitinteractions.domain.checkin.aggregates;
 
-import com.capit.capitinteractions.domain.impl.checkin.commands.CreateCheckinCommand;
-import com.capit.capitinteractions.domain.impl.checkin.events.CheckinCreatedEvent;
+import com.capit.capitinteractions.domain.checkin.commands.CreateCheckinCommand;
+import com.capit.capitinteractions.domain.checkin.events.CheckinCreatedEvent;
 import lombok.NoArgsConstructor;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;

@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.domain.impl.checkin.requests;
+package com.capit.capitinteractions.api.checkin.requests;
 
 import java.util.UUID;
 

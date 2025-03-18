@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.domain.impl.checkin.projections;
+package com.capit.capitinteractions.domain.checkin.projections;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

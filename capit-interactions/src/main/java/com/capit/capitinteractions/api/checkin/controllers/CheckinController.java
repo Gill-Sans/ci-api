@@ -1,7 +1,7 @@
-package com.capit.capitinteractions.domain.impl.checkin.controllers;
+package com.capit.capitinteractions.api.checkin.controllers;
 
-import com.capit.capitinteractions.domain.impl.checkin.requests.CreateCheckinRequest;
-import com.capit.capitinteractions.domain.impl.checkin.services.CheckinServcie;
+import com.capit.capitinteractions.api.checkin.requests.CreateCheckinRequest;
+import com.capit.capitinteractions.domain.checkin.services.CheckinServcie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

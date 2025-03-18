@@ -1,7 +1,7 @@
-package com.capit.capitinteractions.domain.impl.checkin.services;
+package com.capit.capitinteractions.domain.checkin.services;
 
-import com.capit.capitinteractions.domain.impl.checkin.commands.CreateCheckinCommand;
-import com.capit.capitinteractions.domain.impl.checkin.requests.CreateCheckinRequest;
+import com.capit.capitinteractions.domain.checkin.commands.CreateCheckinCommand;
+import com.capit.capitinteractions.api.checkin.requests.CreateCheckinRequest;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;

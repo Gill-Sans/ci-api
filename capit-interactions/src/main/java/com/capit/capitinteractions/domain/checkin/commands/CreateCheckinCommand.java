@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.domain.impl.checkin.commands;
+package com.capit.capitinteractions.domain.checkin.commands;
 
 import lombok.Getter;
 import lombok.Setter;

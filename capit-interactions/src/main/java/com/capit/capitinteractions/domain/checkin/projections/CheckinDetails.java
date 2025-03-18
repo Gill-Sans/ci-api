@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.domain.impl.checkin.projections;
+package com.capit.capitinteractions.domain.checkin.projections;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -9,6 +9,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: capit-schedule
 server:
   port: 8081
 

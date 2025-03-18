@@ -1,4 +1,4 @@
-package com.capit.capitinteractions.domain.impl.checkin.events;
+package com.capit.capitinteractions.domain.checkin.events;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
