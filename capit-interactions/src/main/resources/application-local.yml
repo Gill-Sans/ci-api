@@ -1,8 +1,8 @@
 spring:
   application:
-    name: capit-schedule
+    name: capit-interactions
   datasource:
-    url: jdbc:postgresql://localhost:5432/capit
+    url: jdbc:postgresql://localhost:5432/capit-interactions
     username: postgres
     password: password
   jpa:
@@ -12,7 +12,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: capit-schedule
+      group-id: capit-interactions
 server:
   port: 8081
 
