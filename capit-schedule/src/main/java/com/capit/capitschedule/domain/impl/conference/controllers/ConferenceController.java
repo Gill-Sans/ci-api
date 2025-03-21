@@ -1,9 +1,8 @@
 package com.capit.capitschedule.domain.impl.conference.controllers;
 
-import com.capit.capitschedule.domain.impl.conference.commands.CreateConferenceCommand;
 import com.capit.capitschedule.domain.impl.conference.projections.conferenceDetails.ConferenceDetails;
 import com.capit.capitschedule.domain.impl.conference.projections.conferenceDetails.ConferenceDetailsRepository;
-import com.capit.capitschedule.domain.impl.conference.requests.CreateConferenceRequest;
+import com.capit.capitschedule.domain.impl.conference.dto.CreateConferenceDto;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +36,8 @@ public class ConferenceController {
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createConference(@RequestBody CreateConferenceRequest request) {
-        UUID conferenceId = UUID.randomUUID();
-        CreateConferenceCommand command = new CreateConferenceCommand(
-            conferenceId,
-            request.title(),
-            request.description(),
-            request.startTime(),
-            request.endTime()
-        );
+    public ResponseEntity<UUID> createConference(@RequestBody CreateConferenceDto request) {
 
-        commandGateway.sendAndWait(command);
         return ResponseEntity.ok(conferenceId);
     }
 }
