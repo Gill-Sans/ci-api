@@ -1,19 +1,24 @@
 spring:
   application:
-    name: capit-schedule
+    name: capit-interactions
   datasource:
-    url: jdbc:postgresql://localhost:5432/capit
+    url: jdbc:postgresql://localhost:5432/capit-interactions
     username: postgres
     password: password
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: capit-interactions
 server:
-  port: 8080
+  port: 8081
 
 axon:
   axonserver:
     servers: localhost:8124
+
 
 
