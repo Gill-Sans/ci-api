@@ -7,16 +7,16 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     command: >
       bash -c "docker-entrypoint.sh postgres &
       sleep 10;
       psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE keycloak;\" 2>/dev/null || true;
       psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE capit;\" 2>/dev/null || true;
       wait"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1
@@ -24,15 +24,18 @@ services:
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_DB_VENDOR=postgres
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=password
-    command: ["start-dev"]
-    depends_on:
-      - postgres
+    command: ["start-dev", "--import-realm"]
     ports:
       - "8180:8080"
+    volumes:
+      - ./podman/keycloak/realms:/opt/keycloak/data/import
+    depends_on:
+      - postgres
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5

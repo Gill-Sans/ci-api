@@ -18,6 +18,7 @@
     <module>capit-schedule</module>
     <module>capit-interactions</module>
     <module>capit-users</module>
+    <module>capit-gateway</module>
     <module>capit-common</module>
   </modules>
 </project>
