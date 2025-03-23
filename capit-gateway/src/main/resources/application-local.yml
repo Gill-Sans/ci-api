@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: capit-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/Capit
+server:
+  port: 9000
