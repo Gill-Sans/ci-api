@@ -1,0 +1,26 @@
+{
+  "realm": "Capit",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "clients": [
+    {
+      "clientId": "angular-client",
+      "name": "Angular Client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:4200"],
+      "webOrigins": ["*"],
+      "attributes": {},
+      "protocolMappers": []
+    }
+  ],
+  "users": []
+}

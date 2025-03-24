@@ -19,9 +19,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.1
+    image: quay.io/keycloak/keycloak:26.1.4
     container_name: keycloak
     environment:
+      - KC_HTTP_ENABLED=true
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
       - KC_DB_VENDOR=postgres
@@ -36,6 +37,7 @@ services:
       - ./podman/keycloak/realms:/opt/keycloak/data/import
     depends_on:
       - postgres
+    restart: always
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5
