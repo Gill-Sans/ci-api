@@ -10,7 +10,7 @@ spring:
       ddl-auto: update
     show-sql: false
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092
     consumer:
       group-id: capit-interactions
 server:

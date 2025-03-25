@@ -2,7 +2,7 @@
   "realm": "Capit",
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": false,
+  "registrationAllowed": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
@@ -16,7 +16,7 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
-      "redirectUris": ["http://localhost:4200"],
+      "redirectUris": ["http://localhost:4200/", "http://localhost:4200/*", "http://localhost:4200"],
       "webOrigins": ["*"],
       "attributes": {},
       "protocolMappers": []
