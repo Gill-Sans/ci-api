@@ -14,21 +14,21 @@ public class Routes {
     @Bean
     public RouterFunction<ServerResponse> InteractionServiceRoute() {
         return GatewayRouterFunctions.route("interaction_service")
-                .route(RequestPredicates.path("/api/interaction"), HandlerFunctions.http("http://localhost:8081"))
+                .route(RequestPredicates.path("/api/interaction/**"), HandlerFunctions.http("http://localhost:8081"))
                 .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> ScheduleServiceRoute() {
         return GatewayRouterFunctions.route("schedule_service")
-                .route(RequestPredicates.path("/api/schedule"), HandlerFunctions.http("http://localhost:8082"))
+                .route(RequestPredicates.path("/api/schedule/**"), HandlerFunctions.http("http://localhost:8082"))
                 .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> UserServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
-                .route(RequestPredicates.path("/api/user"), HandlerFunctions.http("http://localhost:8080"))
+                .route(RequestPredicates.path("/api/user/**"), HandlerFunctions.http("http://localhost:8080"))
                 .build();
     }
 }
