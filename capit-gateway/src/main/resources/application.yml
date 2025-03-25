@@ -7,4 +7,4 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/Capit
 server:
-  port: 9000
+  port: 9001

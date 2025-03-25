@@ -2,7 +2,7 @@ spring:
   application:
     name: capit-interactions
   datasource:
-    url: jdbc:postgresql://localhost:5432/capit-interactions
+    url: jdbc:postgresql://localhost:5432/capit
     username: postgres
     password: password
   jpa:
