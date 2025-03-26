@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/check-ins")
+@RequestMapping("/api/interaction/check-ins")
 public class CheckinController {
     private final CheckinServcie checkinServcie;
 

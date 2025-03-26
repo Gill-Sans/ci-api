@@ -1,0 +1,5 @@
+spring:
+    application:
+        name: capit-users
+server:
+    port: 8080
