@@ -17,28 +17,37 @@ import java.util.UUID;
 public class ConferenceAggregate {
     @AggregateIdentifier
     private UUID conferenceId;
-    private String title;
+    private String name;
     private String description;
+    private String speaker;
+    private Address location;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Integer checkinCount;
 
     @CommandHandler
     public ConferenceAggregate(CreateConferenceCommand command) {
         AggregateLifecycle.apply(new ConferenceCreatedEvent(
-            command.getConferenceId(),
-            command.getTitle(),
-            command.getDescription(),
-            command.getStartTime(),
-            command.getEndTime()
+                command.getConferenceId(),
+                command.getName(),
+                command.getDescription(),
+                command.getSpeaker(),
+                command.getLocation(),
+                command.getStartTime(),
+                command.getEndTime(),
+                command.getCheckinCount()
         ));
     }
 
     @EventSourcingHandler
     public void on(ConferenceCreatedEvent event) {
         this.conferenceId = event.getConferenceId();
-        this.title = event.getTitle();
+        this.name = event.getName();
         this.description = event.getDescription();
+        this.speaker = event.getSpeaker();
+        this.location = event.getLocation();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
+        this.checkinCount = event.getCheckinCount();
     }
 }

@@ -1,10 +1,10 @@
 package com.capit.capitschedule.domain.impl.conference.controllers;
 
+import com.capit.capitschedule.domain.impl.conference.dto.CreateConferenceDto;
 import com.capit.capitschedule.domain.impl.conference.projections.conferenceDetails.ConferenceDetails;
 import com.capit.capitschedule.domain.impl.conference.projections.conferenceDetails.ConferenceDetailsRepository;
-import com.capit.capitschedule.domain.impl.conference.dto.CreateConferenceDto;
+import com.capit.capitschedule.domain.impl.conference.services.ConferenceService;
 import lombok.RequiredArgsConstructor;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +20,8 @@ import java.util.UUID;
 @RequestMapping("/conferences")
 @RequiredArgsConstructor
 public class ConferenceController {
-    private final CommandGateway commandGateway;
     private final ConferenceDetailsRepository conferenceDetailsRepository;
+    private final ConferenceService conferenceService;
 
     @GetMapping
     public ResponseEntity<List<ConferenceDetails>> getConferences() {
@@ -37,7 +37,6 @@ public class ConferenceController {
 
     @PostMapping
     public ResponseEntity<UUID> createConference(@RequestBody CreateConferenceDto request) {
-
-        return ResponseEntity.ok(conferenceId);
+        return ResponseEntity.ok(conferenceService.createConference(request));
     }
 }

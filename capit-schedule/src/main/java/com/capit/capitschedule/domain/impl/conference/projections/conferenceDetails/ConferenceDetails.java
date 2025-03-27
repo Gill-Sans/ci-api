@@ -1,5 +1,7 @@
 package com.capit.capitschedule.domain.impl.conference.projections.conferenceDetails;
 
+import com.capit.capitschedule.domain.impl.conference.aggregates.Address;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -20,8 +22,12 @@ import java.util.UUID;
 public class ConferenceDetails {
     @Id
     private UUID id;
-    private String title;
+    private String name;
     private String description;
+    private String speaker;
+    @Embedded
+    private Address location;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Integer checkinCount;
 }
