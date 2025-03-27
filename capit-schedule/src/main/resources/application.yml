@@ -2,7 +2,7 @@ spring:
   application:
     name: capit-schedule
   datasource:
-    url: jdbc:postgresql://localhost:5432/capit-schedule
+    url: jdbc:postgresql://localhost:5432/schedules
     username: postgres
     password: password
   jpa:
