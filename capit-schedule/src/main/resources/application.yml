@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: capit-schedule
+  datasource:
+    url: jdbc:postgresql://localhost:5432/schedules
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+server:
+  port: 8082
+
+logging:
+    level:
+        org.springframework.web: TRACE
+        org.springframework.web.client: TRACE
+        org.springframework.web.servlet: TRACE
+
+
+

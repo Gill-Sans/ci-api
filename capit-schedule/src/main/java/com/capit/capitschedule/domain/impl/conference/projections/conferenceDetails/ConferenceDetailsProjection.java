@@ -14,10 +14,13 @@ public class ConferenceDetailsProjection {
     public void on(ConferenceCreatedEvent event) {
         ConferenceDetails conferenceDetails = ConferenceDetails.builder()
                 .id(event.getConferenceId())
-                .title(event.getTitle())
+                .name(event.getName())
                 .description(event.getDescription())
+                .speaker(event.getSpeaker())
+                .location(event.getLocation())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
+                .checkinCount(event.getCheckinCount())
                 .build();
 
         conferenceDetailsRepository.save(conferenceDetails);
