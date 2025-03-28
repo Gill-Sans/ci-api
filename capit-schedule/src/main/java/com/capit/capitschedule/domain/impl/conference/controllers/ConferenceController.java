@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/conferences")
+@RequestMapping("/api/schedule/conferences")
 @RequiredArgsConstructor
 public class ConferenceController {
     private final ConferenceDetailsRepository conferenceDetailsRepository;
