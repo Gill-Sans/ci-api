@@ -1,4 +1,4 @@
-package com.capit.capitschedule.integration.session;
+package com.capit.capitschedule.integration.session.controller;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

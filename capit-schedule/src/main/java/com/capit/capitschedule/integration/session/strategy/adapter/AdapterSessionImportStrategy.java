@@ -1,4 +1,6 @@
 package com.capit.capitschedule.integration.session.strategy.adapter;
 
-public class AdapterSessionImportStrategy {
+import com.capit.capitschedule.integration.session.strategy.SessionImportStrategy;
+
+public interface AdapterSessionImportStrategy extends SessionImportStrategy {
 }

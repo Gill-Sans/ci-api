@@ -1,4 +1,4 @@
-package com.capit.capitschedule.integration.session;
+package com.capit.capitschedule.integration.session.provider;
 
 import java.util.List;
 import java.util.Map;
@@ -10,5 +10,5 @@ public interface SessionDataProvider {
      * @param externalPayload The raw data from the external source.
      * @return A list of maps representing session properties.
      */
-    List<Map<String, Object>> fetchSessionData(String conferenceId, String externalPayload);
+    List<Map<String, Object>> fetchSessionData(SessionDataRequest request);
 }

@@ -1,17 +1,10 @@
-package com.capit.capitschedule.integration.session;
+package com.capit.capitschedule.integration.session.strategy;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SessionImportMetadata {
-    /**
-     * The strategy type, e.g., "adapter", "scrape", or "customMapping".
-     */
-    String strategy();
-
-    /**
-     * The display name for this strategy.
-     */
+    SessionImportStrategyType strategy();
     String displayName();
 }
