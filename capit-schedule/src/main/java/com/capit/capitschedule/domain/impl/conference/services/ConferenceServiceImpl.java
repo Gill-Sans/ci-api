@@ -20,7 +20,6 @@ public class ConferenceServiceImpl implements ConferenceService {
                 conferenceId,
                 request.name(),
                 request.description(),
-                request.speaker(),
                 request.location(),
                 request.startTime(),
                 request.endTime(),

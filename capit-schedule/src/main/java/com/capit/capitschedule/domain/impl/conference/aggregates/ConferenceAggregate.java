@@ -25,7 +25,6 @@ public class ConferenceAggregate {
     private UUID conferenceId;
     private String name;
     private String description;
-    private String speaker;
     private Address location;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -39,7 +38,6 @@ public class ConferenceAggregate {
                 command.getConferenceId(),
                 command.getName(),
                 command.getDescription(),
-                command.getSpeaker(),
                 command.getLocation(),
                 command.getStartTime(),
                 command.getEndTime(),
@@ -78,7 +76,6 @@ public class ConferenceAggregate {
         this.conferenceId = event.getConferenceId();
         this.name = event.getName();
         this.description = event.getDescription();
-        this.speaker = event.getSpeaker();
         this.location = event.getLocation();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
