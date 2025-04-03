@@ -24,7 +24,6 @@ public class ConferenceDetails {
     private UUID id;
     private String name;
     private String description;
-    private String speaker;
     @Embedded
     private Address location;
     private LocalDateTime startTime;

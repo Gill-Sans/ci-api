@@ -45,7 +45,7 @@ public class ConferenceServiceImplTest {
                 .build();
         LocalDateTime startTime = LocalDateTime.now().plusDays(1);
         LocalDateTime endTime = LocalDateTime.now().plusDays(2);
-        CreateConferenceDto dto = new CreateConferenceDto("Name", "Description", "Speaker", location, startTime, endTime);
+        CreateConferenceDto dto = new CreateConferenceDto("Name", "Description", location, startTime, endTime);
 
         UUID result = conferenceService.createConference(dto);
 
@@ -57,7 +57,6 @@ public class ConferenceServiceImplTest {
         assertEquals(result, sentCommand.getConferenceId());
         assertEquals(dto.name(), sentCommand.getName());
         assertEquals(dto.description(), sentCommand.getDescription());
-        assertEquals(dto.speaker(), sentCommand.getSpeaker());
         assertEquals(dto.location(), sentCommand.getLocation());
         assertEquals(dto.startTime(), sentCommand.getStartTime());
         assertEquals(dto.endTime(), sentCommand.getEndTime());

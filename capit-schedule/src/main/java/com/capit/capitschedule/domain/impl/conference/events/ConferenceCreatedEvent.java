@@ -13,7 +13,6 @@ public class ConferenceCreatedEvent {
     private final UUID conferenceId;
     private final String name;
     private final String description;
-    private final String speaker;
     private final Address location;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;

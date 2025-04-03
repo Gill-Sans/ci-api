@@ -22,5 +22,20 @@
       "protocolMappers": []
     }
   ],
-  "users": []
+  "users": [
+    {
+      "username": "gill-sans",
+      "email": "mertensgill@outlook.com",
+      "firstName": "Gill",
+      "lastName": "Mertens",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    }
+  ]
 }

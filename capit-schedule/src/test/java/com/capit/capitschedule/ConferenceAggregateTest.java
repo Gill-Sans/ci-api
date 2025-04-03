@@ -26,7 +26,6 @@ public class ConferenceAggregateTest {
         UUID conferenceId = UUID.randomUUID();
         String name = "Test Conference";
         String description = "A test description";
-        String speaker = "Test Speaker";
         Address location = Address.builder()
                 .country("Country")
                 .street("Street")
@@ -40,11 +39,11 @@ public class ConferenceAggregateTest {
         int checkinCount = 0;
 
         CreateConferenceCommand command = new CreateConferenceCommand(
-                conferenceId, name, description, speaker, location, startTime, endTime, checkinCount
+                conferenceId, name, description, location, startTime, endTime, checkinCount
         );
 
         ConferenceCreatedEvent expectedEvent = new ConferenceCreatedEvent(
-                conferenceId, name, description, speaker, location, startTime, endTime, checkinCount
+                conferenceId, name, description, location, startTime, endTime, checkinCount
         );
 
         fixture.givenNoPriorActivity()

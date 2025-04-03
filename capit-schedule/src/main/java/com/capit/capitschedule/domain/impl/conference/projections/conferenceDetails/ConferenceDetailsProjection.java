@@ -16,7 +16,6 @@ public class ConferenceDetailsProjection {
                 .id(event.getConferenceId())
                 .name(event.getName())
                 .description(event.getDescription())
-                .speaker(event.getSpeaker())
                 .location(event.getLocation())
                 .startTime(event.getStartTime())
                 .endTime(event.getEndTime())
