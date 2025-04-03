@@ -3,7 +3,6 @@ package com.capit.capitschedule.integration.session.controller;
 import com.capit.capitschedule.integration.session.dto.SessionsImportStrategyDto;
 import com.capit.capitschedule.integration.session.service.SessionImportStrategyRegistry;
 import com.capit.capitschedule.integration.session.strategy.SessionImportStrategyType;
-import com.capit.capitschedule.integration.session.strategy.adapter.AdapterSessionImportStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/session/import")
+@RequestMapping("/api/schedule/session/import")
 @RequiredArgsConstructor
 public class SessionImportStrategyController {
     private final SessionImportStrategyRegistry strategyRegistry;
