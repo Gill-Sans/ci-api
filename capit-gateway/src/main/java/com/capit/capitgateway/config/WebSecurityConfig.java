@@ -24,6 +24,7 @@ public class WebSecurityConfig {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/api/interaction/check-ins/stream/**").permitAll()
                     .anyRequest()
                     .authenticated()
             )

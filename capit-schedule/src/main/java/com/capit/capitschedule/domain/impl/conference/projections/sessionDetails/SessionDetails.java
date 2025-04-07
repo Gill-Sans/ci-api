@@ -56,6 +56,9 @@ public class SessionDetails {
     
     private String locationDetails;
     
+    @Column(name = "checkin_count", nullable = false, columnDefinition = "integer default 0")
+    private Integer checkinCount = 0;
+    
     public SessionDetails(UUID sessionId, UUID conferenceId, String title, String description, 
                           LocalDateTime startTime, LocalDateTime endTime, String speaker) {
         this.sessionId = sessionId;
@@ -65,5 +68,6 @@ public class SessionDetails {
         this.startTime = startTime;
         this.endTime = endTime;
         this.speaker = speaker;
+        this.checkinCount = 0;
     }
 } 

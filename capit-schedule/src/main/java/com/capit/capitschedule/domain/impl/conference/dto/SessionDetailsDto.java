@@ -22,6 +22,7 @@ public class SessionDetailsDto {
     private String speaker;
     private Address address;
     private String locationDetails;
+    private Integer checkinCount;
 
     public static SessionDetailsDto fromEntity(SessionDetails entity) {
         return SessionDetailsDto.builder()
@@ -34,6 +35,7 @@ public class SessionDetailsDto {
                 .speaker(entity.getSpeaker())
                 .address(entity.getAddress())
                 .locationDetails(entity.getLocationDetails())
+                .checkinCount(entity.getCheckinCount())
                 .build();
     }
 

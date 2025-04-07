@@ -36,6 +36,20 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "johndoe",
+      "email": "johndoe@email.com",
+      "firstName": "john",
+      "lastName": "Doe",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
     }
   ]
 }
