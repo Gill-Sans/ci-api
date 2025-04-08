@@ -18,6 +18,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - capit
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.4
@@ -38,7 +40,9 @@ services:
       - ./podman/keycloak/realms:/opt/keycloak/data/import
     depends_on:
       - postgres
-    restart: always
+    restart: unless-stopped
+    networks:
+      - capit
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5
@@ -48,6 +52,8 @@ services:
       - ZOOKEEPER_TICK_TIME=2000
     ports:
       - "2181:2181"
+    networks:
+      - capit
 
   kafka:
     image: confluentinc/cp-kafka:7.6.5
@@ -63,6 +69,8 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+    networks:
+      - capit
 
   axonserver:
     image: axoniq/axonserver:2024.2.4
@@ -80,12 +88,12 @@ services:
       - "8024:8024"
       - "8124:8124"
     networks:
-      - axon
+      - capit
 
   gateway:
     build:
-      context: .
-      dockerfile: capit-gateway/Dockerfile
+      context: capit-gateway
+      dockerfile: ./Dockerfile
     container_name: capit-gateway
     ports:
       - "9001:9001"
@@ -101,15 +109,15 @@ services:
       - schedule
       - interactions
     networks:
-      - axon
+      - capit
 
   schedule:
     build:
-      context: .
-      dockerfile: capit-schedule/Dockerfile
+      context: capit-schedule
+      dockerfile: ./Dockerfile
     container_name: capit-schedule
     ports:
-      - "8081:8081"
+      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/schedules
@@ -120,15 +128,15 @@ services:
       - postgres
       - axonserver
     networks:
-      - axon
+      - capit
 
   interactions:
     build:
-      context: .
-      dockerfile: capit-interactions/Dockerfile
+      context: capit-interactions
+      dockerfile: ./Dockerfile
     container_name: capit-interactions
     ports:
-      - "8082:8082"
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/interactions
@@ -139,7 +147,7 @@ services:
       - postgres
       - kafka
     networks:
-      - axon
+      - capit
 
 volumes:
   postgres_data:
@@ -148,7 +156,7 @@ volumes:
   axonserver-log:
 
 networks:
-  axon:
+  capit:
 
 secrets:
   axonserver-properties:

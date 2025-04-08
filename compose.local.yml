@@ -18,6 +18,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - capit
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.4
@@ -39,6 +41,8 @@ services:
     depends_on:
       - postgres
     restart: always
+    networks:
+      - capit
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5
@@ -48,6 +52,8 @@ services:
       - ZOOKEEPER_TICK_TIME=2000
     ports:
       - "2181:2181"
+    networks:
+      - capit
 
   kafka:
     image: confluentinc/cp-kafka:7.6.5
@@ -63,6 +69,8 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+    networks:
+      - capit
 
   axonserver:
     image: axoniq/axonserver:2024.2.4
@@ -80,7 +88,7 @@ services:
       - "8024:8024"
       - "8124:8124"
     networks:
-      - axon
+      - capit
 
 volumes:
   postgres_data:
@@ -89,7 +97,7 @@ volumes:
   axonserver-log:
 
 networks:
-  axon:
+  capit:
 
 secrets:
   axonserver-properties:
