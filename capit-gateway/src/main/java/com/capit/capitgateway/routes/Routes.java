@@ -17,7 +17,7 @@ public class Routes {
     public RouterFunction<ServerResponse> InteractionServiceRoute() {
         return GatewayRouterFunctions.route("interaction_service")
                 .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/interaction/**"), HandlerFunctions.http("http://localhost:8081"))
+                .route(RequestPredicates.path("/api/interaction/**"), HandlerFunctions.http("http://capit-interactions:8081"))
                 .build();
     }
 
@@ -25,7 +25,7 @@ public class Routes {
     public RouterFunction<ServerResponse> ScheduleServiceRoute() {
         return GatewayRouterFunctions.route("schedule_service")
                 .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/schedule/**"), HandlerFunctions.http("http://localhost:8082"))
+                .route(RequestPredicates.path("/api/schedule/**"), HandlerFunctions.http("http://capit-schedule:8082"))
                 .build();
     }
 

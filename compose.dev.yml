@@ -40,7 +40,7 @@ services:
       - ./podman/keycloak/realms:/opt/keycloak/data/import
     depends_on:
       - postgres
-    restart: always
+    restart: unless-stopped
     networks:
       - capit
 
@@ -87,6 +87,65 @@ services:
     ports:
       - "8024:8024"
       - "8124:8124"
+    networks:
+      - capit
+
+  gateway:
+    build:
+      context: capit-gateway
+      dockerfile: ./Dockerfile
+    container_name: capit-gateway
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/interactions
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI=http://keycloak:8080/realms/capit/protocol/openid-connect/certs
+    depends_on:
+      - postgres
+      - keycloak
+      - schedule
+      - interactions
+    networks:
+      - capit
+
+  schedule:
+    build:
+      context: capit-schedule
+      dockerfile: ./Dockerfile
+    container_name: capit-schedule
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/schedules
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - AXON_AXONSERVER_SERVERS=axonserver:8124
+    depends_on:
+      - postgres
+      - axonserver
+    networks:
+      - capit
+
+  interactions:
+    build:
+      context: capit-interactions
+      dockerfile: ./Dockerfile
+    container_name: capit-interactions
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/interactions
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+    depends_on:
+      - postgres
+      - kafka
     networks:
       - capit
 

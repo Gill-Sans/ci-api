@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: capit-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/capit
+server:
+  port: 9001
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.oauth2: TRACE

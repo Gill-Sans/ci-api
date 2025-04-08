@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: capit-interactions
+  datasource:
+    url: jdbc:postgresql://postgres:5432/interactions
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: capit-interactions
+server:
+  port: 8081
+logging:
+    level:
+        org.springframework.web: TRACE
+        org.springframework.web.client: TRACE
+        org.springframework.web.servlet: TRACE
+
+
+
+
+
