@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build & Deploy') {
 			steps {
-                sh "mvn clean deploy -pl capit-schedule -am -B -DskipTests --settings /path/to/settings.xml"
+                sh "mvn clean deploy -pl capit-schedule -am -B -DskipTests --settings ~/.m2/settings.xml"
             }
         }
     }
