@@ -18,6 +18,17 @@
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
 	</properties>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>artifactory-snapshots</id>
+			<url>http://192.168.0.52:8081/artifactory/libs-snapshot-local</url>
+		</snapshotRepository>
+		<repository>
+			<id>artifactory-releases</id>
+			<url>http://192.168.0.52:8081/artifactory/libs-release-local</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
