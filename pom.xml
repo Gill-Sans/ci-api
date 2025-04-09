@@ -32,4 +32,14 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>artifactory-releases</id>
+      <url>http://192.168.0.52:8081/artifactory/libs-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>artifactory-snapshots</id>
+      <url>http://192.168.0.52:8081/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
