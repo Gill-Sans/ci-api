@@ -1,3 +1,5 @@
+import groovy.transform.Field
+
 @Field String POM_VERSION = ''
 @Field String TARGET_REPO = ''
 
