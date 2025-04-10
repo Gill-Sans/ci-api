@@ -1,5 +1,8 @@
 pipeline {
 	agent any
+    tools {
+		jfrog 'jfrog-cli-latest'
+    }
     stages {
 		stage('Checkout') {
 			steps {
@@ -17,14 +20,17 @@ pipeline {
                 ])
             }
         }
-
-        stage('Build & Deploy') {
+        stage('Build') {
 			steps {
-                sh "mvn clean deploy -X -pl capit-schedule -am -B -DskipTests --settings ~/.m2/settings.xml"
+				sh "cd capit-schedule && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
+            }
+        }
+        stage('Upload Artifact') {
+			steps {
+				sh "jfrog rt u \"capit-schedule/target/*.jar\" libs-snapshot-local --build-name=capit-schedule --build-number=\${BUILD_NUMBER}"
             }
         }
     }
-
     post {
 		success {
 			echo "Build & Deploy succeeded for capit-schedule!"
