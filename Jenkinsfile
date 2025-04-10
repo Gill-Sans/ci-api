@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Upload Artifact') {
 			steps {
-				sh "jfrog rt u \"capit-schedule/target/*.jar\" libs-snapshot-local --build-name=capit-schedule --build-number=\${BUILD_NUMBER}"
+				jf 'rt u capit-schedule/target/*.jar libs-snapshot-local --build-name=capit-schedule --build-number=${BUILD_NUMBER}'
             }
         }
     }
