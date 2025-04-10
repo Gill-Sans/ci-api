@@ -17,7 +17,7 @@ pipeline {
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [
                         [$class: 'PathRestriction',
-                            includedRegions: 'capit-schedule/.*'
+                            includedRegions: 'capit-gateway/.*'
                         ]
                     ],
                     submoduleCfg: [],
@@ -30,7 +30,7 @@ pipeline {
 			steps {
 				script {
 					// Extract version from POM
-                    POM_VERSION = sh(script: "cd capit-schedule && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+                    POM_VERSION = sh(script: "cd capit-gateway && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
 
                     // Determine target repository based on version
                     if (POM_VERSION.contains('SNAPSHOT')) {
@@ -46,25 +46,25 @@ pipeline {
 
         stage('run unit tests') {
 			steps {
-				sh "cd capit-schedule && mvn test -B --settings ~/.m2/settings.xml"
+				sh "cd capit-gateway && mvn test -B --settings ~/.m2/settings.xml"
 			}
 		}
 
         stage('Build') {
 			steps {
-				sh "cd capit-schedule && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
+				sh "cd capit-gateway && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
             }
         }
 
         stage('Upload Artifact') {
 			steps {
-				jf "rt u capit-schedule/target/*.jar ${TARGET_REPO} --build-name=capit-schedule --build-number=${BUILD_NUMBER}"
+				jf "rt u capit-gateway/target/*.jar ${TARGET_REPO} --build-name=capit-gateway --build-number=${BUILD_NUMBER}"
             }
         }
     }
     post {
 		success {
-			echo "Build & Deploy succeeded for capit-schedule!"
+			echo "Build & Deploy succeeded for capit-gateway!"
         }
         failure {
 			echo "Build & Deploy failed. Check the logs for issues."
