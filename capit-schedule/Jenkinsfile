@@ -4,8 +4,8 @@ pipeline {
 		jfrog 'jfrog-cli-latest'
     }
     environment {
-		POM_VERSION = ''
-        TARGET_REPO = ''
+		def POM_VERSION = ''
+        def TARGET_REPO = ''
     }
     stages {
 		stage('Checkout') {
