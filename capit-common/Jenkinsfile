@@ -1,11 +1,10 @@
+@Field String POM_VERSION = ''
+@Field String TARGET_REPO = ''
+
 pipeline {
 	agent any
     tools {
 		jfrog 'jfrog-cli-latest'
-    }
-    environment {
-		def POM_VERSION = ''
-        def TARGET_REPO = ''
     }
     stages {
 		stage('Checkout') {
@@ -24,6 +23,7 @@ pipeline {
                 ])
             }
         }
+
         stage('Determine Version') {
 			steps {
 				script {
@@ -41,11 +41,19 @@ pipeline {
                 }
             }
         }
+
+        stage('run unit tests') {
+			steps {
+				sh "cd capit-schedule && mvn test -B --settings ~/.m2/settings.xml"
+			}
+		}
+
         stage('Build') {
 			steps {
 				sh "cd capit-common && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
             }
         }
+
         stage('Upload Artifact') {
 			steps {
 				jf "rt u capit-common/target/*.jar ${TARGET_REPO} --build-name=capit-common --build-number=${BUILD_NUMBER}"
