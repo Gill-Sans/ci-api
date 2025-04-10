@@ -1,0 +1,73 @@
+import groovy.transform.Field
+
+@Field String POM_VERSION = ''
+@Field String TARGET_REPO = ''
+
+pipeline {
+	agent any
+    tools {
+		jfrog 'jfrog-cli-latest'
+    }
+    stages {
+		stage('Checkout') {
+			steps {
+				checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/dev"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'PathRestriction',
+                            includedRegions: 'capit-interactions/.*'
+                        ]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[url: 'https://github.com/Gill-Sans/ci-api.git']]
+                ])
+            }
+        }
+
+        stage('Determine Version') {
+			steps {
+				script {
+					// Extract version from POM
+                    POM_VERSION = sh(script: "cd capit-interactions && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+
+                    // Determine target repository based on version
+                    if (POM_VERSION.contains('SNAPSHOT')) {
+						TARGET_REPO = 'libs-snapshot-local'
+                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    } else {
+						TARGET_REPO = 'libs-release-local'
+                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    }
+                }
+            }
+        }
+
+        stage('run unit tests') {
+			steps {
+				sh "cd capit-interactions && mvn test -B --settings ~/.m2/settings.xml"
+			}
+		}
+
+        stage('Build') {
+			steps {
+				sh "cd capit-interactions && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
+            }
+        }
+
+        stage('Upload Artifact') {
+			steps {
+				jf "rt u capit-interactions/target/*.jar ${TARGET_REPO} --build-name=capit-interactions --build-number=${BUILD_NUMBER}"
+            }
+        }
+    }
+    post {
+		success {
+			echo "Build & Deploy succeeded for capit-interactions!"
+        }
+        failure {
+			echo "Build & Deploy failed. Check the logs for issues."
+        }
+    }
+}
