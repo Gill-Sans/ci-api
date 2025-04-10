@@ -1,0 +1,63 @@
+pipeline {
+	agent any
+    tools {
+		jfrog 'jfrog-cli-latest'
+    }
+    environment {
+		def POM_VERSION = ''
+        def TARGET_REPO = ''
+    }
+    stages {
+		stage('Checkout') {
+			steps {
+				checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/dev"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'PathRestriction',
+                            includedRegions: 'capit-common/.*'
+                        ]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[url: 'https://github.com/Gill-Sans/ci-api.git']]
+                ])
+            }
+        }
+        stage('Determine Version') {
+			steps {
+				script {
+					// Extract version from POM
+                    POM_VERSION = sh(script: "cd capit-common && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+
+                    // Determine target repository based on version
+                    if (POM_VERSION.contains('SNAPSHOT')) {
+						TARGET_REPO = 'libs-snapshot-local'
+                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    } else {
+						TARGET_REPO = 'libs-release-local'
+                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    }
+                }
+            }
+        }
+        stage('Build') {
+			steps {
+				sh "cd capit-common && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
+            }
+        }
+        stage('Upload Artifact') {
+			steps {
+				jf "rt u capit-common/target/*.jar ${TARGET_REPO} --build-name=capit-common --build-number=${BUILD_NUMBER}"
+            }
+        }
+    }
+    post {
+		success {
+			echo "Build & Deploy succeeded for capit-common!"
+        }
+        failure {
+			echo "Build & Deploy failed. Check the logs for issues."
+        }
+    }
+}
