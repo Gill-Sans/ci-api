@@ -3,6 +3,10 @@ pipeline {
     tools {
 		jfrog 'jfrog-cli-latest'
     }
+    environment {
+		POM_VERSION = ''
+        TARGET_REPO = ''
+    }
     stages {
 		stage('Checkout') {
 			steps {
@@ -20,6 +24,23 @@ pipeline {
                 ])
             }
         }
+        stage('Determine Version') {
+			steps {
+				script {
+					// Extract version from POM
+                    POM_VERSION = sh(script: "cd capit-schedule && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+
+                    // Determine target repository based on version
+                    if (POM_VERSION.contains('SNAPSHOT')) {
+						TARGET_REPO = 'libs-snapshot-local'
+                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    } else {
+						TARGET_REPO = 'libs-release-local'
+                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
+                    }
+                }
+            }
+        }
         stage('Build') {
 			steps {
 				sh "cd capit-schedule && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
@@ -27,7 +48,7 @@ pipeline {
         }
         stage('Upload Artifact') {
 			steps {
-				jf 'rt u capit-schedule/target/*.jar libs-snapshot-local --build-name=capit-schedule --build-number=${BUILD_NUMBER}'
+				jf "rt u capit-schedule/target/*.jar ${TARGET_REPO} --build-name=capit-schedule --build-number=${BUILD_NUMBER}"
             }
         }
     }
