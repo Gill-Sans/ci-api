@@ -1,6 +1,7 @@
 package com.capit.capitusers.user.services;
 
 import com.capit.capitusers.user.dto.UserDetailsDto;
+import com.capit.capitusers.user.dto.UserUpdateDto;
 import com.capit.capitusers.user.entities.User;
 import com.capit.capitusers.user.mappers.UserMapper;
 import com.capit.capitusers.user.repositories.UserRepository;
@@ -22,28 +23,23 @@ public class UserServiceImpl implements UserService {
     private final ObjectMapper objectMapper;
     
     @Override
-    public User getUserProfileFromAuth(String authHeader) {
+    public UserDetailsDto getUserProfileFromAuth(String authHeader) {
         try {
             String token = extractToken(authHeader);
             UserDetailsDto userDetails = extractUserDetailsFromToken(token);
-            return getOrCreateUser(
-                    userDetails.getKeycloakId(),
-                    userDetails.getFirstName(),
-                    userDetails.getLastName(), 
-                    userDetails.getEmail()
-            );
+            
+            Optional<User> existingUser = userRepository.findByKeycloakId(userDetails.getKeycloakId());
+            
+            User user;
+            user = existingUser.orElseGet(() -> createNewUser(userDetails));
+            
+            return userMapper.toDto(user);
         } catch (Exception e) {
             log.error("Error processing JWT token", e);
             throw new RuntimeException("Invalid token", e);
         }
     }
     
-    /**
-     * Extracts the raw JWT token from Authorization header
-     * 
-     * @param authHeader Authorization header value
-     * @return JWT token without 'Bearer ' prefix
-     */
     protected String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
@@ -73,54 +69,56 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public User getOrCreateUser(String keycloakId, String firstName, String lastName, String email) {
-        UserDetailsDto userDetailsDto = createUserDetailsDto(keycloakId, firstName, lastName, email);
-        Optional<User> existingUser = findUserByKeycloakId(keycloakId);
+    public UserDetailsDto getOrCreateUser(String keycloakId, String firstName, String lastName, String email) {
+        Optional<User> existingUser = userRepository.findByKeycloakId(keycloakId);
         
+        User user;
         if (existingUser.isPresent()) {
-            return updateExistingUser(existingUser.get(), userDetailsDto);
+            user = existingUser.get();
         } else {
-            return createNewUser(userDetailsDto);
+            UserDetailsDto userDetailsDto = UserDetailsDto.builder()
+                    .keycloakId(keycloakId)
+                    .firstName(firstName)
+                    .lastName(lastName)
+                    .email(email)
+                    .build();
+            user = createNewUser(userDetailsDto);
         }
+        
+        return userMapper.toDto(user);
     }
     
-    /**
-     * Creates a UserDetailsDto from individual fields
-     */
-    protected UserDetailsDto createUserDetailsDto(String keycloakId, String firstName, String lastName, String email) {
-        return UserDetailsDto.builder()
-                .keycloakId(keycloakId)
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .build();
-    }
-    
-    /**
-     * Finds a user by their Keycloak ID
-     */
-    protected Optional<User> findUserByKeycloakId(String keycloakId) {
-        return userRepository.findByKeycloakId(keycloakId);
-    }
-    
-    /**
-     * Updates an existing user with new details
-     */
-    protected User updateExistingUser(User existingUser, UserDetailsDto userDetailsDto) {
-        userMapper.updateEntity(existingUser, userDetailsDto);
-        return userRepository.save(existingUser);
-    }
-    
-    /**
-     * Creates a new user from the details provided
-     */
     protected User createNewUser(UserDetailsDto userDetailsDto) {
         User newUser = userMapper.toEntity(userDetailsDto);
         return userRepository.save(newUser);
     }
     
     @Override
-    public User getUserByKeycloakId(String keycloakId) {
-        return findUserByKeycloakId(keycloakId).orElse(null);
+    public UserDetailsDto getUserByKeycloakId(String keycloakId) {
+        Optional<User> user = userRepository.findByKeycloakId(keycloakId);
+        return user.map(userMapper::toDto).orElse(null);
+    }
+    
+    @Override
+    public UserDetailsDto updateUserProfile(String authHeader, UserUpdateDto updateDto) {
+        String token = extractToken(authHeader);
+        try {
+            UserDetailsDto userDetails = extractUserDetailsFromToken(token);
+            Optional<User> userOptional = userRepository.findByKeycloakId(userDetails.getKeycloakId());
+            
+            if (userOptional.isEmpty()) {
+                throw new RuntimeException("User not found");
+            }
+            
+            User user = userOptional.get();
+
+            User updatedUser = userMapper.updateEntityFromUpdateDto(user, updateDto);
+            User savedUser = userRepository.save(updatedUser);
+            
+            return userMapper.toDto(savedUser);
+        } catch (Exception e) {
+            log.error("Error updating user profile", e);
+            throw new RuntimeException("Failed to update user profile", e);
+        }
     }
 }

@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailsDto {
-    private String keycloakId;
+public class UserUpdateDto {
     private String firstName;
     private String lastName;
     private String email;
