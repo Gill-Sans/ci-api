@@ -1,5 +1,6 @@
 package com.capit.capitgateway.routes;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 import org.springframework.context.annotation.Bean;
@@ -12,12 +13,20 @@ import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFu
 
 @Configuration
 public class Routes {
+    @Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
+    private String getServiceUrl(String serviceName, int port) {
+        boolean isLocalProfile = "local".equals(activeProfile);
+        return isLocalProfile ? "http://localhost:" + port : "http://" + serviceName + ":" + port;
+    }
 
     @Bean
     public RouterFunction<ServerResponse> InteractionServiceRoute() {
         return GatewayRouterFunctions.route("interaction_service")
                 .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/interaction/**"), HandlerFunctions.http("http://capit-interactions:8081"))
+                .route(RequestPredicates.path("/api/interaction/**"), 
+                       HandlerFunctions.http(getServiceUrl("capit-interactions", 8081)))
                 .build();
     }
 
@@ -25,7 +34,8 @@ public class Routes {
     public RouterFunction<ServerResponse> ScheduleServiceRoute() {
         return GatewayRouterFunctions.route("schedule_service")
                 .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/schedule/**"), HandlerFunctions.http("http://capit-schedule:8082"))
+                .route(RequestPredicates.path("/api/schedule/**"), 
+                       HandlerFunctions.http(getServiceUrl("capit-schedule", 8082)))
                 .build();
     }
 
@@ -33,7 +43,8 @@ public class Routes {
     public RouterFunction<ServerResponse> UserServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
                 .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/user/**"), HandlerFunctions.http("http://localhost:8080"))
+                .route(RequestPredicates.path("/api/users/**"), 
+                       HandlerFunctions.http(getServiceUrl("capit-users", 8080)))
                 .build();
     }
 }
