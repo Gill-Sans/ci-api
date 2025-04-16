@@ -100,21 +100,18 @@ pipeline {
 			}
 		}
 
-		stage('Deploy to Kubernetes') {
+		stage('Deploy to Kubernetes cluster') {
 			steps {
 				withCredentials([file(
 				  credentialsId: 'kubeconfig-dev',
 				  variable: 'KUBECONFIG'
 				)]) {
 					sh """
-					echo "Applying manifest to dev cluster..."
 					kubectl --kubeconfig=$KUBECONFIG apply -f k8s-config-local.yaml --record
-
-					echo "Waiting for rollout..."
-					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${JOB_NAME} --timeout=120s
+					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${JOB_NAME} --timeout=240s
 				  	"""
 				}
-		  	}
+			}
 		}
     }
 
