@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:17.4
+    image: docker.io/library/postgres:17.4
     container_name: postgres
     environment:
       - POSTGRES_USER=postgres
@@ -46,7 +46,7 @@ services:
       - capit
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.5
+    image: docker.io/confluentinc/cp-zookeeper:7.6.5
     container_name: zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
@@ -57,7 +57,7 @@ services:
       - capit
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.5
+    image: docker.io/confluentinc/cp-kafka:7.6.5
     container_name: kafka
     environment:
       - KAFKA_BROKER_ID=1
@@ -74,7 +74,7 @@ services:
       - capit
 
   axonserver:
-    image: axoniq/axonserver:2024.2.4
+    image: docker.io/axoniq/axonserver:2024.2.4
     container_name: axonserver
     volumes:
       - axonserver-data:/axonserver/data
