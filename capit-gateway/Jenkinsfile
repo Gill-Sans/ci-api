@@ -30,7 +30,13 @@ pipeline {
         stage('Determine Version') {
 			steps {
 				script {
-                    POM_VERSION = sh(script: "cd capit-gateway && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+					POM_VERSION = sh(
+					  script: "cd capit-gateway && mvn -B -Dstyle.color=never help:evaluate -Dexpression=project.version -q -DforceStdout",
+					  returnStdout: true
+					)
+					.replaceAll(/\u001B\[[;\\d]*[mK]/, '')  // remove ANSI escapes just in case
+					.trim()
+					echo "POM version: ${POM_VERSION}"
 
                     if (POM_VERSION.contains('SNAPSHOT')) {
 						TARGET_REPO = 'libs-snapshot-local'
