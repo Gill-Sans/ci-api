@@ -31,23 +31,26 @@ pipeline {
 			steps {
 				script {
 					POM_VERSION = sh(
-					  script: "cd capit-gateway && mvn -B -Dstyle.color=never help:evaluate -Dexpression=project.version -q -DforceStdout",
-					  returnStdout: true
-					)
-					.replaceAll(/\u001B\[[;\\d]*[mK]/, '')  // remove ANSI escapes just in case
-					.trim()
-					echo "POM version: ${POM_VERSION}"
+						script: """
+					  		cd capit-gateway
+					  		mvn -B -Dstyle.color=never help:evaluate \
+						  		-Dexpression=project.version -q -DforceStdout \
+							| sed -r 's/\\x1B\\[[0-9;]*[mK]//g'
+						""",
+						returnStdout: true
+				  	).trim()
 
-                    if (POM_VERSION.contains('SNAPSHOT')) {
+				  	echo "POM version: ${POM_VERSION}"
+
+				  	if (POM_VERSION.contains('SNAPSHOT')) {
 						TARGET_REPO = 'libs-snapshot-local'
-                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    } else {
+				  	} else {
 						TARGET_REPO = 'libs-release-local'
-                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    }
-                }
-            }
-        }
+				  	}
+				  echo "Deploying to ${TARGET_REPO}"
+				}
+		  	}
+		}
 
         stage('run unit tests') {
 			steps {
