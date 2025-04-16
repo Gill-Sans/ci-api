@@ -30,10 +30,8 @@ pipeline {
         stage('Determine Version') {
 			steps {
 				script {
-					// Extract version from POM
                     POM_VERSION = sh(script: "cd capit-gateway && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
 
-                    // Determine target repository based on version
                     if (POM_VERSION.contains('SNAPSHOT')) {
 						TARGET_REPO = 'libs-snapshot-local'
                         echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
@@ -63,34 +61,37 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Container Image') {
 			steps {
 				script {
-                    env.DOCKER_IMAGE = docker.build(
-                        "ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}",
-                        "capit-gateway"
-                    )
-                }
-            }
-        }
+					  sh """
+						cd capit-gateway
+						podman build --format docker -t ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION} .
+					  """
+        		}
+      		}
+		}
 
-        stage('Publish Docker Image') {
+		stage('Publish Container Image') {
 			steps {
-                withCredentials([usernamePassword(
-                    credentialsId: GHCR_CREDENTIALS,
-                    usernameVariable: 'GHCR_USER',
-                    passwordVariable: 'GHCR_TOKEN'
-                )]) {
-					script {
-						docker.withRegistry('https://ghcr.io', env.GHCR_CREDENTIALS) {
-                            docker.image("ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}").push()
-                            docker.image("ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}").push('latest')
-                        }
-                    }
-                }
-            }
-        }
+				withCredentials([usernamePassword(
+				  credentialsId: env.GHCR_CREDS,
+				  usernameVariable: 'GHCR_USER',
+				  passwordVariable: 'GHCR_TOKEN'
+				)]) {
+					sh """
+					echo "${GHCR_TOKEN}" | podman login ghcr.io --username="${GHCR_USER}" --password-stdin
+
+					podman push ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}
+
+					podman tag ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION} ghcr.io/gill-sans/ci-api/capit-gateway:latest
+					podman push ghcr.io/gill-sans/ci-api/capit-gateway:latest
+					"""
+				}
+			}
+		}
     }
+
     post {
 		success {
 			echo "Build & Deploy succeeded for capit-gateway!"
