@@ -2,6 +2,7 @@ import groovy.transform.Field
 
 @Field String POM_VERSION = ''
 @Field String TARGET_REPO = ''
+@Field String GHCR_CREDENTIALS = 'ghcr-credentials'
 
 pipeline {
 	agent any
@@ -59,6 +60,34 @@ pipeline {
         stage('Upload Artifact') {
 			steps {
 				jf "rt u capit-gateway/target/*.jar ${TARGET_REPO} --build-name=capit-gateway --build-number=${BUILD_NUMBER}"
+            }
+        }
+
+        stage('Build Docker Image') {
+			steps {
+				script {
+                    env.DOCKER_IMAGE = docker.build(
+                        "ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}",
+                        "capit-gateway"
+                    )
+                }
+            }
+        }
+
+        stage('Publish Docker Image') {
+			steps {
+                withCredentials([usernamePassword(
+                    credentialsId: GHCR_CREDENTIALS,
+                    usernameVariable: 'GHCR_USER',
+                    passwordVariable: 'GHCR_TOKEN'
+                )]) {
+					script {
+						docker.withRegistry('https://ghcr.io', env.GHCR_CREDENTIALS) {
+                            docker.image("ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}").push()
+                            docker.image("ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}").push('latest')
+                        }
+                    }
+                }
             }
         }
     }
