@@ -2,6 +2,7 @@ import groovy.transform.Field
 
 @Field String POM_VERSION = ''
 @Field String TARGET_REPO = ''
+@Field String GHCR_CREDENTIALS = 'ghcr-credentials'
 
 pipeline {
 	agent any
@@ -29,20 +30,27 @@ pipeline {
         stage('Determine Version') {
 			steps {
 				script {
-					// Extract version from POM
-                    POM_VERSION = sh(script: "cd capit-interactions && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+					POM_VERSION = sh(
+						script: """
+					  		cd capit-interactions
+					  		mvn -B -Dstyle.color=never help:evaluate \
+						  		-Dexpression=project.version -q -DforceStdout \
+							| sed -r 's/\\x1B\\[[0-9;]*[mK]//g'
+						""",
+						returnStdout: true
+				  	).trim()
 
-                    // Determine target repository based on version
-                    if (POM_VERSION.contains('SNAPSHOT')) {
+				  	echo "POM version: ${POM_VERSION}"
+
+				  	if (POM_VERSION.contains('SNAPSHOT')) {
 						TARGET_REPO = 'libs-snapshot-local'
-                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    } else {
+				  	} else {
 						TARGET_REPO = 'libs-release-local'
-                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    }
-                }
-            }
-        }
+				  	}
+				  echo "Deploying to ${TARGET_REPO}"
+				}
+		  	}
+		}
 
         stage('run unit tests') {
 			steps {
@@ -61,6 +69,36 @@ pipeline {
 				jf "rt u capit-interactions/target/*.jar ${TARGET_REPO} --build-name=capit-interactions --build-number=${BUILD_NUMBER}"
             }
         }
+        
+        stage('Build Container Image') {
+			steps {
+				script {
+					sh """
+						cd capit-interactions
+						podman build --format docker -t ghcr.io/gill-sans/ci-api/capit-interactions:${POM_VERSION} .
+					  """
+        		}
+      		}
+		}
+
+		stage('Publish Container Image') {
+			steps {
+				withCredentials([usernamePassword(
+				  credentialsId: GHCR_CREDENTIALS,
+				  usernameVariable: 'GHCR_USER',
+				  passwordVariable: 'GHCR_TOKEN'
+				)]) {
+					sh """
+					echo "${GHCR_TOKEN}" | podman login ghcr.io --username="${GHCR_USER}" --password-stdin
+
+					podman push ghcr.io/gill-sans/ci-api/capit-interactions:${POM_VERSION}
+
+					podman tag ghcr.io/gill-sans/ci-api/capit-interactions:${POM_VERSION} ghcr.io/gill-sans/ci-api/capit-interactions:latest
+					podman push ghcr.io/gill-sans/ci-api/capit-interactions:latest
+					"""
+				}
+			}
+		}
     }
     post {
 		success {

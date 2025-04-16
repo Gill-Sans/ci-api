@@ -29,20 +29,27 @@ pipeline {
         stage('Determine Version') {
 			steps {
 				script {
-					// Extract version from POM
-                    POM_VERSION = sh(script: "cd capit-common && mvn help:evaluate -Dexpression=project.version -q -DforceStdout", returnStdout: true).trim()
+					POM_VERSION = sh(
+						script: """
+					  		cd capit-gateway
+					  		mvn -B -Dstyle.color=never help:evaluate \
+						  		-Dexpression=project.version -q -DforceStdout \
+							| sed -r 's/\\x1B\\[[0-9;]*[mK]//g'
+						""",
+						returnStdout: true
+				  	).trim()
 
-                    // Determine target repository based on version
-                    if (POM_VERSION.contains('SNAPSHOT')) {
+				  	echo "POM version: ${POM_VERSION}"
+
+				  	if (POM_VERSION.contains('SNAPSHOT')) {
 						TARGET_REPO = 'libs-snapshot-local'
-                        echo "Detected SNAPSHOT version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    } else {
+				  	} else {
 						TARGET_REPO = 'libs-release-local'
-                        echo "Detected RELEASE version: ${POM_VERSION}, will deploy to ${TARGET_REPO}"
-                    }
-                }
-            }
-        }
+				  	}
+				  echo "Deploying to ${TARGET_REPO}"
+				}
+		  	}
+		}
 
         stage('run unit tests') {
 			steps {
@@ -62,6 +69,7 @@ pipeline {
             }
         }
     }
+
     post {
 		success {
 			echo "Build & Deploy succeeded for capit-common!"
