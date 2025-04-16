@@ -107,7 +107,7 @@ pipeline {
 				  variable: 'KUBECONFIG'
 				)]) {
 					sh """
-					kubectl --kubeconfig=$KUBECONFIG apply -f k8s-config-local.yaml --record
+					kubectl --kubeconfig=$KUBECONFIG apply -f K8s-config-dev.yaml
 					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${JOB_NAME} --timeout=240s
 				  	"""
 				}
