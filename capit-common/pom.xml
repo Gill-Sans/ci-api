@@ -12,29 +12,13 @@
     <name>capit-common</name>
     <packaging>jar</packaging>
 
-    <properties>
-        <java.version>21</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>artifactory-snapshots</id>
-            <url>http://192.168.0.52:8081/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-        <repository>
-            <id>artifactory-releases</id>
-            <url>http://192.168.0.52:8081/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <skip>false</skip>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
