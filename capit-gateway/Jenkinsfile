@@ -84,7 +84,7 @@ pipeline {
 		stage('Publish Container Image') {
 			steps {
 				withCredentials([usernamePassword(
-				  credentialsId: GHCR_CREDS,
+				  credentialsId: GHCR_CREDENTIALS,
 				  usernameVariable: 'GHCR_USER',
 				  passwordVariable: 'GHCR_TOKEN'
 				)]) {
