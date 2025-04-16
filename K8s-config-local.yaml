@@ -1,0 +1,155 @@
+# Kk8s-config-local.yaml
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1) Gateway
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capit-gateway
+  labels:
+    app: capit-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capit-gateway
+  template:
+    metadata:
+      labels:
+        app: capit-gateway
+    spec:
+      hostNetwork: true
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: capit-gateway
+          image: ghcr.io/gill-sans/ci-api/capit-gateway:latest
+          ports:
+            - containerPort: 9001
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://localhost:5432/interactions"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password"
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+              value: "http://localhost:8180/realms/capit/protocol/openid-connect/certs"
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# 2) Users
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capit-users
+  labels:
+    app: capit-users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capit-users
+  template:
+    metadata:
+      labels:
+        app: capit-users
+    spec:
+      hostNetwork: true
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: capit-users
+          image: ghcr.io/gill-sans/ci-api/capit-users:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://localhost:5432/users"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password"
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# 3) Interactions
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capit-interactions
+  labels:
+    app: capit-interactions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capit-interactions
+  template:
+    metadata:
+      labels:
+        app: capit-interactions
+    spec:
+      hostNetwork: true
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: capit-interactions
+          image: ghcr.io/gill-sans/ci-api/capit-interactions:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://localhost:5432/interactions"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "localhost:9092"
+---
+# ─────────────────────────────────────────────────────────────────────────────
+# 4) Schedule
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capit-schedule
+  labels:
+    app: capit-schedule
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: capit-schedule
+  template:
+    metadata:
+      labels:
+        app: capit-schedule
+    spec:
+      hostNetwork: true
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: capit-schedule
+          image: ghcr.io/gill-sans/ci-api/capit-schedule:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://localhost:5432/schedules"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "password"
+            - name: AXON_AXONSERVER_SERVERS
+              value: "localhost:8124"
