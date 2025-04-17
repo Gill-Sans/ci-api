@@ -108,13 +108,13 @@ pipeline {
 				  credentialsId: KUBE_CREDENTIALS,
 				  variable: 'KUBECONFIG'
 				)]) {
-					sh '''
+					sh """
 					echo "Applying manifest to dev cluster…"
-					kubectl --kubeconfig=$KUBECONFIG apply -f K8s-config-dev.yaml --record
+					kubectl --kubeconfig=${KUBECONFIG} apply -f K8s-config-dev.yaml --record
 
-					echo "Waiting for rollout of deployment/$SERVICE_NAME…"
-					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/$SERVICE_NAME --timeout=240s
-					'''
+					echo "Waiting for rollout of deployment/${SERVICE_NAME}…"
+					kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/${SERVICE_NAME} --timeout=240s
+					"""
 				}
 			}
 		}
