@@ -36,8 +36,8 @@ spec:
               value: "postgres"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "password"
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
-              value: "http://192.168.0.53:8180/realms/capit/protocol/openid-connect/certs"
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: "http://192.168.0.53:8180/realms/capit"
 ---
 # ─────────────────────────────────────────────────────────────────────────────
 # 2) Users
