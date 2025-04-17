@@ -20,7 +20,7 @@ pipeline {
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [
                         [$class: 'PathRestriction',
-                            includedRegions: 'capit-gateway/.*'
+                            includedRegions: '${SERVICE_NAME}/.*'
                         ]
                     ],
                     submoduleCfg: [],
@@ -34,7 +34,7 @@ pipeline {
 				script {
 					POM_VERSION = sh(
 						script: """
-					  		cd capit-gateway
+					  		cd ${SERVICE_NAME}
 					  		mvn -B -Dstyle.color=never help:evaluate \
 						  		-Dexpression=project.version -q -DforceStdout \
 							| sed -r 's/\\x1B\\[[0-9;]*[mK]//g'
@@ -56,28 +56,28 @@ pipeline {
 
         stage('run unit tests') {
 			steps {
-				sh "cd capit-gateway && mvn test -B --settings ~/.m2/settings.xml"
+				sh "cd ${SERVICE_NAME} && mvn test -B --settings ~/.m2/settings.xml"
 			}
 		}
 
         stage('Build') {
 			steps {
-				sh "cd capit-gateway && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
+				sh "cd ${SERVICE_NAME} && mvn clean install -B -DskipTests --settings ~/.m2/settings.xml"
             }
         }
 
         stage('Upload Artifact') {
 			steps {
-				jf "rt u capit-gateway/target/*.jar ${TARGET_REPO} --build-name=capit-gateway --build-number=${BUILD_NUMBER}"
+				jf "rt u ${SERVICE_NAME}/target/*.jar ${TARGET_REPO} --build-name=${SERVICE_NAME} --build-number=${BUILD_NUMBER}"
             }
         }
 
         stage('Build Container Image') {
 			steps {
 				script {
-					  sh """
-						cd capit-gateway
-						podman build --format docker -t ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION} .
+					sh """
+						cd ${SERVICE_NAME}
+						podman build --format docker -t ghcr.io/gill-sans/ci-api/${SERVICE_NAME}:${POM_VERSION} .
 					  """
         		}
       		}
@@ -93,10 +93,10 @@ pipeline {
 					sh """
 					echo "${GHCR_TOKEN}" | podman login ghcr.io --username="${GHCR_USER}" --password-stdin
 
-					podman push ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION}
+					podman push ghcr.io/gill-sans/ci-api/${SERVICE_NAME}:${POM_VERSION}
 
-					podman tag ghcr.io/gill-sans/ci-api/capit-gateway:${POM_VERSION} ghcr.io/gill-sans/ci-api/capit-gateway:latest
-					podman push ghcr.io/gill-sans/ci-api/capit-gateway:latest
+					podman tag ghcr.io/gill-sans/ci-api/${SERVICE_NAME}:${POM_VERSION} ghcr.io/gill-sans/ci-api/${SERVICE_NAME}:latest
+					podman push ghcr.io/gill-sans/ci-api/${SERVICE_NAME}:latest
 					"""
 				}
 			}
@@ -110,19 +110,18 @@ pipeline {
 				)]) {
 					sh """
 					echo "Applying manifest to dev cluster…"
-					kubectl --kubeconfig=${KUBECONFIG} apply -f K8s-config-dev.yaml --record
+					kubectl --kubeconfig=${KUBECONFIG} apply -f K8s-config-dev.yaml
 
 					echo "Waiting for rollout of deployment/${SERVICE_NAME}…"
-					kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/${SERVICE_NAME} --timeout=240s
+					kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/${SERVICE_NAME} --timeout=300s
 					"""
 				}
 			}
 		}
     }
-
     post {
 		success {
-			echo "Build & Deploy succeeded for capit-gateway!"
+			echo "Build & Deploy succeeded for ${SERVICE_NAME}!"
         }
         failure {
 			echo "Build & Deploy failed. Check the logs for issues."

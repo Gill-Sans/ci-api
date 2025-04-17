@@ -113,7 +113,7 @@ pipeline {
 					kubectl --kubeconfig=${KUBECONFIG} apply -f K8s-config-dev.yaml
 
 					echo "Waiting for rollout of deployment/${SERVICE_NAME}…"
-					kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/${SERVICE_NAME} --timeout=240s
+					kubectl --kubeconfig=${KUBECONFIG} rollout status deployment/${SERVICE_NAME} --timeout=300s
 					"""
 				}
 			}
