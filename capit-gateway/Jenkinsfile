@@ -3,6 +3,8 @@ import groovy.transform.Field
 @Field String POM_VERSION = ''
 @Field String TARGET_REPO = ''
 @Field String GHCR_CREDENTIALS = 'ghcr-credentials'
+@Field String SERVICE_NAME = 'capit-gateway'
+@Field String KUBE_CREDENTIALS = 'kubeconfig-dev'
 
 pipeline {
 	agent any
@@ -103,13 +105,16 @@ pipeline {
 		stage('Deploy to Kubernetes cluster') {
 			steps {
 				withCredentials([file(
-				  credentialsId: 'kubeconfig-dev',
+				  credentialsId: KUBE_CREDENTIALS,
 				  variable: 'KUBECONFIG'
 				)]) {
-					sh """
-					kubectl --kubeconfig=$KUBECONFIG apply -f K8s-config-dev.yaml
-					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/${JOB_NAME} --timeout=240s
-				  	"""
+					sh '''
+					echo "Applying manifest to dev cluster…"
+					kubectl --kubeconfig=$KUBECONFIG apply -f K8s-config-dev.yaml --record
+
+					echo "Waiting for rollout of deployment/$SERVICE_NAME…"
+					kubectl --kubeconfig=$KUBECONFIG rollout status deployment/$SERVICE_NAME --timeout=240s
+					'''
 				}
 			}
 		}
