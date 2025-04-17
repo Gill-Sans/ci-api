@@ -66,6 +66,7 @@ spec:
           image: ghcr.io/gill-sans/ci-api/capit-gateway:latest
           ports:
             - containerPort: 9001
+              hostPort: 9001
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
