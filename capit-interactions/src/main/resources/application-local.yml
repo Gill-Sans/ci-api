@@ -15,12 +15,6 @@ spring:
       group-id: capit-interactions
 server:
   port: 8081
-logging:
-    level:
-        org.springframework.web: TRACE
-        org.springframework.web.client: TRACE
-        org.springframework.web.servlet: TRACE
-
 
 
 
