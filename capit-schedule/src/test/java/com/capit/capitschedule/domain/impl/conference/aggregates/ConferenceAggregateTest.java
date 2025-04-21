@@ -1,7 +1,5 @@
-package com.capit.capitschedule;
+package com.capit.capitschedule.domain.impl.conference.aggregates;
 
-import com.capit.capitschedule.domain.impl.conference.aggregates.Address;
-import com.capit.capitschedule.domain.impl.conference.aggregates.ConferenceAggregate;
 import com.capit.capitschedule.domain.impl.conference.commands.CreateConferenceCommand;
 import com.capit.capitschedule.domain.impl.conference.events.ConferenceCreatedEvent;
 import org.axonframework.test.aggregate.AggregateTestFixture;

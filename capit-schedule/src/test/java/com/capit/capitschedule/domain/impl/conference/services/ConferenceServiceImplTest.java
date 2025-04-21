@@ -1,9 +1,8 @@
-package com.capit.capitschedule;
+package com.capit.capitschedule.domain.impl.conference.services;
 
 import com.capit.capitschedule.domain.impl.conference.aggregates.Address;
 import com.capit.capitschedule.domain.impl.conference.commands.CreateConferenceCommand;
 import com.capit.capitschedule.domain.impl.conference.dto.CreateConferenceDto;
-import com.capit.capitschedule.domain.impl.conference.services.ConferenceServiceImpl;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
