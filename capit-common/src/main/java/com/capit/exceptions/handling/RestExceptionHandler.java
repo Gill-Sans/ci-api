@@ -4,7 +4,6 @@ package com.capit.exceptions.handling;
 import com.capit.exceptions.BaseRuntimeException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
 
     @ExceptionHandler(BaseRuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleBaseRuntimeException(BaseRuntimeException ex, HttpServletRequest request) {

@@ -88,9 +88,7 @@ public class ConferenceServiceImplTest {
                 .when(conferenceValidator).validateCreateConference(any(CreateConferenceDto.class));
 
         // Act & Assert
-        assertThrows(ValidationException.class, () -> {
-            conferenceService.createConference(validDto);
-        });
+        assertThrows(ValidationException.class, () -> conferenceService.createConference(validDto));
 
         verify(commandGateway, never()).send(any());
     }
@@ -104,9 +102,7 @@ public class ConferenceServiceImplTest {
                 .thenThrow(commandException);
 
         // Act & Assert
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            conferenceService.createConference(validDto);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> conferenceService.createConference(validDto));
 
         assertEquals("Command failed", exception.getMessage());
         verify(conferenceValidator, times(1)).validateCreateConference(any());
