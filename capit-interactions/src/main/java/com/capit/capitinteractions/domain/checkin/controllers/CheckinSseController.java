@@ -1,6 +1,6 @@
 package com.capit.capitinteractions.domain.checkin.controllers;
 
-import com.capit.capitinteractions.domain.checkin.events.CheckinEvent;
+import com.capit.capitinteractions.domain.checkin.events.CheckedinEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
@@ -33,7 +33,7 @@ public class CheckinSseController {
     }
 
     @EventListener
-    public void handleCheckinEvent(CheckinEvent event) {
+    public void handleCheckinEvent(CheckedinEvent event) {
         String sessionId = event.getSessionId();
         int count = event.getCount();
         

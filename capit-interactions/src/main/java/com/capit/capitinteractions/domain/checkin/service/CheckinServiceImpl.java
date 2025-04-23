@@ -1,12 +1,11 @@
 package com.capit.capitinteractions.domain.checkin.service;
 
-import com.capit.capitinteractions.api.checkin.requests.CreateCheckinRequest;
+import com.capit.capitinteractions.domain.checkin.requests.CreateCheckinRequest;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
-import com.capit.capitinteractions.domain.checkin.events.CheckinEvent;
+import com.capit.capitinteractions.domain.checkin.events.CheckedinEvent;
 import com.capit.capitinteractions.domain.checkin.repository.CheckinRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 public class CheckinServiceImpl implements CheckinService {
 
     private final CheckinRepository checkinRepository;
-    private final JdbcTemplate jdbcTemplate;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -43,7 +41,7 @@ public class CheckinServiceImpl implements CheckinService {
         
         // Publish an event instead of directly calling the SSE controller
         String sessionId = request.sessionId().toString();
-        eventPublisher.publishEvent(new CheckinEvent(sessionId, newCount));
+        eventPublisher.publishEvent(new CheckedinEvent(sessionId, newCount));
         
         return savedCheckin;
     }

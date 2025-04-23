@@ -1,6 +1,6 @@
 package com.capit.capitinteractions.domain.checkin.controllers;
 
-import com.capit.capitinteractions.api.checkin.requests.CreateCheckinRequest;
+import com.capit.capitinteractions.domain.checkin.requests.CreateCheckinRequest;
 import com.capit.capitinteractions.domain.checkin.dto.CheckinDto;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
 import com.capit.capitinteractions.domain.checkin.service.CheckinService;
