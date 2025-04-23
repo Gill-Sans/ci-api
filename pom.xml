@@ -77,7 +77,6 @@
     </dependencies>
   </dependencyManagement>
 
-
   <!-- Plugin Management: Configure common plugins -->
   <build>
     <pluginManagement>
