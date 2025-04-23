@@ -21,22 +21,28 @@ public class RoutesTest {
 
     @Test
     public void testGetServiceUrlLocal() throws Exception {
+        //Arrange
         ReflectionTestUtils.setField(routes, "activeProfile", "local");
 
+        //Act
         Method getServiceUrlMethod = Routes.class.getDeclaredMethod("getServiceUrl", String.class, int.class);
         getServiceUrlMethod.setAccessible(true);
 
+        //Assert
         String result = (String) getServiceUrlMethod.invoke(routes, "test-service", 8080);
         assertEquals("http://localhost:8080", result);
     }
 
     @Test
     public void testGetServiceUrlNonLocal() throws Exception {
+        //Arrange
         ReflectionTestUtils.setField(routes, "activeProfile", "production");
 
+        //Act
         Method getServiceUrlMethod = Routes.class.getDeclaredMethod("getServiceUrl", String.class, int.class);
         getServiceUrlMethod.setAccessible(true);
 
+        //Assert
         String result = (String) getServiceUrlMethod.invoke(routes, "test-service", 8080);
         assertEquals("http://test-service:8080", result);
     }
