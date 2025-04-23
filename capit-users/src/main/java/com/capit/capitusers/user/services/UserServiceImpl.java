@@ -3,11 +3,11 @@ package com.capit.capitusers.user.services;
 import com.capit.capitusers.user.dto.UserDetailsDto;
 import com.capit.capitusers.user.dto.UserUpdateDto;
 import com.capit.capitusers.user.entities.User;
-import com.capit.capitusers.user.mappers.UserMapper;
 import com.capit.capitusers.user.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     
     @Override
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
             User user;
             user = existingUser.orElseGet(() -> createNewUser(userDetails));
             
-            return userMapper.toDto(user);
+            return modelMapper.map(user, UserDetailsDto.class);
         } catch (Exception e) {
             log.error("Error processing JWT token", e);
             throw new RuntimeException("Invalid token", e);
@@ -85,18 +85,18 @@ public class UserServiceImpl implements UserService {
             user = createNewUser(userDetailsDto);
         }
         
-        return userMapper.toDto(user);
+        return modelMapper.map(user, UserDetailsDto.class);
     }
     
     protected User createNewUser(UserDetailsDto userDetailsDto) {
-        User newUser = userMapper.toEntity(userDetailsDto);
+        User newUser = modelMapper.map(userDetailsDto, User.class);
         return userRepository.save(newUser);
     }
     
     @Override
     public UserDetailsDto getUserByKeycloakId(String keycloakId) {
         Optional<User> user = userRepository.findByKeycloakId(keycloakId);
-        return user.map(userMapper::toDto).orElse(null);
+        return user.map(u -> modelMapper.map(u, UserDetailsDto.class)).orElse(null);
     }
     
     @Override
@@ -111,11 +111,12 @@ public class UserServiceImpl implements UserService {
             }
             
             User user = userOptional.get();
-
-            User updatedUser = userMapper.updateEntityFromUpdateDto(user, updateDto);
-            User savedUser = userRepository.save(updatedUser);
             
-            return userMapper.toDto(savedUser);
+            // Map non-null properties from updateDto to the user entity
+            modelMapper.map(updateDto, user);
+            User savedUser = userRepository.save(user);
+            
+            return modelMapper.map(savedUser, UserDetailsDto.class);
         } catch (Exception e) {
             log.error("Error updating user profile", e);
             throw new RuntimeException("Failed to update user profile", e);
