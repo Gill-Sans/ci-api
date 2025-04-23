@@ -18,7 +18,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- No version is needed here since it will inherit from pluginManagement -->
                 <configuration>
                     <executable>true</executable>
                 </configuration>
