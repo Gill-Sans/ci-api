@@ -1,22 +1,26 @@
-package com.capit.capitusers.user.dto;
+package com.capit.capitinteractions.domain.user;
 
-import java.util.UUID;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailsDto {
+@Table(name = "app_users")
+public class User {
+    @Id
     private UUID id;
     private String firstName;
     private String lastName;
-    private String email;
-    private String companyBranch;
-} 
+}

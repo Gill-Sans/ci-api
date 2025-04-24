@@ -62,6 +62,41 @@
       }
     },
     {
+      "clientId": "postman-client",
+      "name": "Postman Client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "$uper$ecret123!",
+      "redirectUris": [
+        "http://localhost:7500/",
+        "http://localhost:7500/*"
+      ],
+      "webOrigins": [],
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "consentRequired": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "post.logout.redirect.uris": ""
+      },
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "basic"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access"
+      ]
+    },
+    {
       "clientId": "spring-authorization-client",
       "name": "spring-authorization-client",
       "description": "",

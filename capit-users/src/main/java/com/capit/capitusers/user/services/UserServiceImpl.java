@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -24,13 +26,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final UserEventProducer userEventProducer;
     
     @Override
     public UserDetailsDto getUserProfileFromAuth(String authHeader) {
         String token = extractToken(authHeader);
         UserDetailsDto userDetails = extractUserDetailsFromToken(token);
 
-        Optional<User> existingUser = userRepository.findByKeycloakId(userDetails.getKeycloakId());
+        Optional<User> existingUser = userRepository.findById(userDetails.getId());
 
         User user = existingUser.orElseGet(() -> createNewUser(userDetails));
 
@@ -44,13 +47,6 @@ public class UserServiceImpl implements UserService {
         return authHeader;
     }
     
-    /**
-     * Extracts user details from a JWT token
-     * 
-     * @param token JWT token
-     * @return UserDetailsDto with extracted information
-     * @throws Exception If token parsing fails
-     */
     protected UserDetailsDto extractUserDetailsFromToken(String token) {
         String[] chunks = token.split("\\.");
         String payload = new String(Base64.getDecoder().decode(chunks[1]));
@@ -63,7 +59,7 @@ public class UserServiceImpl implements UserService {
         }
         
         return UserDetailsDto.builder()
-                .keycloakId((String) claims.get("sub"))
+                .id(UUID.fromString((String) claims.get("sub")))
                 .firstName((String) claims.getOrDefault("given_name", ""))
                 .lastName((String) claims.getOrDefault("family_name", ""))
                 .email((String) claims.getOrDefault("email", ""))
@@ -71,15 +67,14 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public UserDetailsDto getOrCreateUser(String keycloakId, String firstName, String lastName, String email) {
-        Optional<User> existingUser = userRepository.findByKeycloakId(keycloakId);
+    public UserDetailsDto getOrCreateUser(UUID userId, String firstName, String lastName, String email) {
+        Optional<User> existingUser = userRepository.findById(userId);
         
         User user;
         if (existingUser.isPresent()) {
             user = existingUser.get();
         } else {
             UserDetailsDto userDetailsDto = UserDetailsDto.builder()
-                    .keycloakId(keycloakId)
                     .firstName(firstName)
                     .lastName(lastName)
                     .email(email)
@@ -92,13 +87,18 @@ public class UserServiceImpl implements UserService {
     
     protected User createNewUser(UserDetailsDto userDetailsDto) {
         User newUser = modelMapper.map(userDetailsDto, User.class);
-        return userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+        
+        userEventProducer.publishUserCreatedEvent(savedUser);
+        
+        return savedUser;
     }
     
     @Override
     public UserDetailsDto getUserByKeycloakId(String keycloakId) {
-        Optional<User> user = userRepository.findByKeycloakId(keycloakId);
-        return user.map(u -> modelMapper.map(u, UserDetailsDto.class)).orElse(null);
+        User user = userRepository.findById(UUID.fromString(keycloakId))
+            .orElseThrow(() -> new BaseRuntimeException("User not found", HttpStatus.NOT_FOUND));
+        return modelMapper.map(user, UserDetailsDto.class);
     }
     
     @Override
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
         String token = extractToken(authHeader);
         try {
             UserDetailsDto userDetails = extractUserDetailsFromToken(token);
-            Optional<User> userOptional = userRepository.findByKeycloakId(userDetails.getKeycloakId());
+            Optional<User> userOptional = userRepository.findById(userDetails.getId());
             
             if (userOptional.isEmpty()) {
                 throw new BaseRuntimeException("User not found", HttpStatus.NOT_FOUND);

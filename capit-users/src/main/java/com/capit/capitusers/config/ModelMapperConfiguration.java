@@ -17,9 +17,6 @@ public class ModelMapperConfiguration {
         modelMapper.getConfiguration()
                 .setPropertyCondition(Conditions.isNotNull())
                 .setSkipNullEnabled(true);
-
-        TypeMap<UserDetailsDto, User> typeMap = modelMapper.createTypeMap(UserDetailsDto.class, User.class);
-        typeMap.addMappings(mapper -> mapper.skip(User::setId));
         return modelMapper;
     }
 }

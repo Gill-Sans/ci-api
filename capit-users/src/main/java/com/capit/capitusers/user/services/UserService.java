@@ -1,5 +1,7 @@
 package com.capit.capitusers.user.services;
 
+import java.util.UUID;
+
 import com.capit.capitusers.user.dto.UserDetailsDto;
 import com.capit.capitusers.user.dto.UserUpdateDto;
 
@@ -16,7 +18,7 @@ public interface UserService {
      * If a user with the given keycloakId exists, returns that user.
      * Otherwise creates a new user with the provided information.
      */
-    UserDetailsDto getOrCreateUser(String keycloakId, String firstName, String lastName, String email);
+    UserDetailsDto getOrCreateUser(UUID userId, String firstName, String lastName, String email);
     
     /**
      * Gets a user by their Keycloak ID (sud)
