@@ -19,19 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    
-    /**
-     * Endpoint that gets or creates a user profile based on the JWT token
-     */
+
     @GetMapping("/details")
     public ResponseEntity<UserDetailsDto> getUserDetails(@RequestHeader("Authorization") String authHeader) {
         UserDetailsDto userDetails = userService.getUserProfileFromAuth(authHeader);
         return ResponseEntity.ok(userDetails);
     }
-    
-    /**
-     * Endpoint that updates a user profile based on the JWT token
-     */
+
     @PatchMapping("/details")
     public ResponseEntity<UserDetailsDto> updateUserDetails(
             @RequestHeader("Authorization") String authHeader,

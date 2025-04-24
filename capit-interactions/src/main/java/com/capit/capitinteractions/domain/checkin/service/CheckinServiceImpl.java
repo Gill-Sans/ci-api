@@ -4,8 +4,10 @@ import com.capit.capitinteractions.domain.checkin.requests.CreateCheckinRequest;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
 import com.capit.capitinteractions.domain.checkin.events.CheckedinEvent;
 import com.capit.capitinteractions.domain.checkin.repository.CheckinRepository;
+import com.capit.exceptions.BaseRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +27,7 @@ public class CheckinServiceImpl implements CheckinService {
     @Transactional
     public Checkin createCheckin(CreateCheckinRequest request) {
         if (checkinRepository.existsByUserIdAndSessionId(request.userId(), request.sessionId())) {
-            throw new IllegalStateException("Check-in already exists for this user and session");
+            throw new BaseRuntimeException("Checkin already exists for userId: " + request.userId() + " and sessionId: " + request.sessionId(), HttpStatus.CONFLICT);
         }
 
         Checkin checkin = new Checkin();
@@ -35,11 +37,9 @@ public class CheckinServiceImpl implements CheckinService {
         checkin.setCheckinTime(LocalDateTime.now());
 
         Checkin savedCheckin = checkinRepository.save(checkin);
-        
-        // Get the new count after incrementing
+
         int newCount = checkinRepository.findBySessionId(request.sessionId()).size();
-        
-        // Publish an event instead of directly calling the SSE controller
+
         String sessionId = request.sessionId().toString();
         eventPublisher.publishEvent(new CheckedinEvent(sessionId, newCount));
         

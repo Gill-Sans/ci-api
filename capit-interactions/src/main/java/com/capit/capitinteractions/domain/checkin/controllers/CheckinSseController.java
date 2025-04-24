@@ -21,11 +21,9 @@ public class CheckinSseController {
     @GetMapping(value = "/api/interaction/check-ins/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamAllCheckins() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        
-        // Add emitter to the list
+
         emitters.add(emitter);
-        
-        // Remove emitter on completion or timeout
+
         emitter.onCompletion(() -> emitters.remove(emitter));
         emitter.onTimeout(() -> emitters.remove(emitter));
         
@@ -52,8 +50,7 @@ public class CheckinSseController {
                 deadEmitters.add(emitter);
             }
         });
-        
-        // Clean up any dead emitters
+
         if (!deadEmitters.isEmpty()) {
             emitters.removeAll(deadEmitters);
         }

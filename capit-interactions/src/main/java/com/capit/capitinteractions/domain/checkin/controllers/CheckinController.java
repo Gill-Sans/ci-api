@@ -21,12 +21,8 @@ public class CheckinController {
 
     @PostMapping
     public ResponseEntity<CheckinDto> createCheckin(@RequestBody CreateCheckinRequest request) {
-        try {
-            Checkin checkin = checkinService.createCheckin(request);
-            return ResponseEntity.ok(CheckinDto.fromEntity(checkin));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        Checkin checkin = checkinService.createCheckin(request);
+        return ResponseEntity.ok(CheckinDto.fromEntity(checkin));
     }
     
     @GetMapping("/{id}")
