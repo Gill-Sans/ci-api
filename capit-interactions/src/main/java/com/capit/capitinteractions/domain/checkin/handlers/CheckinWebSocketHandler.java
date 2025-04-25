@@ -59,14 +59,12 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
         return Mono.when(send, receive);
     }
 
-    // Extract conferenceId from the handshake URI
     private String extractConferenceId(WebSocketSession session) {
         URI uri = session.getHandshakeInfo().getUri();
         MultiValueMap<String, String> params = UriComponentsBuilder.fromUri(uri).build().getQueryParams();
         return params.getFirst("conferenceId");
     }
 
-    // Prepare the initial snapshot message
     private Mono<WebSocketMessage> initialSnapshot(WebSocketSession session, String conferenceId) {
         return Mono.fromCallable(() -> buildInitialPayload(conferenceId))
             .subscribeOn(Schedulers.boundedElastic())
@@ -97,7 +95,6 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
         );
     }
 
-    // Stream real-time checkin events for the given conference
     private Flux<WebSocketMessage> eventFlux(WebSocketSession session, String conferenceId) {
         return checkinSink.asFlux()
             .filter(evt -> evt.getConferenceId().equals(conferenceId))
@@ -112,13 +109,11 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
             });
     }
 
-    // Parse inbound text messages to CreateCheckinRequest
     private Mono<CreateCheckinRequest> parseRequest(String text) {
         return Mono.fromCallable(() -> objectMapper.readValue(text, CreateCheckinRequest.class))
             .subscribeOn(Schedulers.boundedElastic());
     }
 
-    // Handle an incoming checkin request: persist and broadcast
     private Mono<Void> handleRequest(CreateCheckinRequest request) {
         return Mono.fromCallable(() -> checkinService.createCheckin(request))
             .subscribeOn(Schedulers.boundedElastic())
@@ -126,7 +121,6 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
             .then();
     }
 
-    // Build and publish a CheckinKafkaEvent: local emit and Kafka send
     private Mono<Void> publishEvent(Checkin saved) {
         User user = userRepository.findById(saved.getUserId()).orElse(null);
         CheckinKafkaEvent event = CheckinKafkaEvent.builder()

@@ -66,25 +66,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
     
-    @Override
-    public UserDetailsDto getOrCreateUser(UUID userId, String firstName, String lastName, String email) {
-        Optional<User> existingUser = userRepository.findById(userId);
-        
-        User user;
-        if (existingUser.isPresent()) {
-            user = existingUser.get();
-        } else {
-            UserDetailsDto userDetailsDto = UserDetailsDto.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .build();
-            user = createNewUser(userDetailsDto);
-        }
-        
-        return modelMapper.map(user, UserDetailsDto.class);
-    }
-    
     protected User createNewUser(UserDetailsDto userDetailsDto) {
         User newUser = modelMapper.map(userDetailsDto, User.class);
         User savedUser = userRepository.save(newUser);
@@ -92,13 +73,6 @@ public class UserServiceImpl implements UserService {
         userEventProducer.publishUserCreatedEvent(savedUser);
         
         return savedUser;
-    }
-    
-    @Override
-    public UserDetailsDto getUserByKeycloakId(String keycloakId) {
-        User user = userRepository.findById(UUID.fromString(keycloakId))
-            .orElseThrow(() -> new BaseRuntimeException("User not found", HttpStatus.NOT_FOUND));
-        return modelMapper.map(user, UserDetailsDto.class);
     }
     
     @Override

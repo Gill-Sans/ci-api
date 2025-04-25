@@ -73,12 +73,11 @@ public class ReactorKafkaConfig {
             @Value("${interactions.topic.checkin.name:checkin-events}") String topicName
     ) {
         Map<String,Object> props = kafkaProperties.buildConsumerProperties();
-        props.put(ConsumerConfig.GROUP_ID_CONFIG,              "checkin-" + instanceId);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,     "latest");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,   StringDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "checkin-" + instanceId);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES,
-                "com.capit.capitinteractions.domain.checkin.events");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.capit.capitinteractions.domain.checkin.events");
 
         return ReceiverOptions.<String, CheckinKafkaEvent>create(props)
                 .subscription(List.of(topicName));
