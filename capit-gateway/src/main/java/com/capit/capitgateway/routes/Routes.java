@@ -1,50 +1,46 @@
 package com.capit.capitgateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
-import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.function.RequestPredicates;
-import org.springframework.web.servlet.function.RouterFunction;
-import org.springframework.web.servlet.function.ServerResponse;
-
-import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.addRequestHeader;
 
 @Configuration
 public class Routes {
+
     @Value("${spring.profiles.active:default}")
     private String activeProfile;
 
     private String getServiceUrl(String serviceName, int port) {
-        boolean isLocalProfile = "local".equals(activeProfile);
-        return isLocalProfile ? "http://localhost:" + port : "http://" + serviceName + ":" + port;
+        boolean isLocal = "local".equals(activeProfile);
+        return isLocal ? "http://localhost:" + port : "http://" + serviceName + ":" + port;
+    }
+
+    private String getWsServiceUrl(String serviceName, int port) {
+        return getServiceUrl(serviceName, port).replaceFirst("^http", "ws");
     }
 
     @Bean
-    public RouterFunction<ServerResponse> InteractionServiceRoute() {
-        return GatewayRouterFunctions.route("interaction_service")
-                .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/interaction/**"), 
-                       HandlerFunctions.http(getServiceUrl("capit-interactions", 8081)))
-                .build();
-    }
+    public RouteLocator routeLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+            .route("interaction_service", r -> r.path("/api/interaction/**")
+                .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
+                .uri(getServiceUrl("capit-interactions", 8081)))
 
-    @Bean
-    public RouterFunction<ServerResponse> ScheduleServiceRoute() {
-        return GatewayRouterFunctions.route("schedule_service")
-                .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/schedule/**"), 
-                       HandlerFunctions.http(getServiceUrl("capit-schedule", 8082)))
-                .build();
-    }
+            .route("schedule_service", r -> r.path("/api/schedule/**")
+                .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
+                .uri(getServiceUrl("capit-schedule", 8082)))
 
-    @Bean
-    public RouterFunction<ServerResponse> UserServiceRoute() {
-        return GatewayRouterFunctions.route("user_service")
-                .before(addRequestHeader("X-Gateway-Auth", "true"))
-                .route(RequestPredicates.path("/api/users/**"), 
-                       HandlerFunctions.http(getServiceUrl("capit-users", 8080)))
-                .build();
+            .route("user_service", r -> r.path("/api/users/**")
+                .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
+                .uri(getServiceUrl("capit-users", 8080)))
+
+            .route("ws_checkins", r -> r.path("/api/interaction/ws/checkins")
+                .and().header("Upgrade", "WebSocket")
+                .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
+                .uri(getWsServiceUrl("capit-interactions", 8081)))
+
+            .build();
     }
 }
