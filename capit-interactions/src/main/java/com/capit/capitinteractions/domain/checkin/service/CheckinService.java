@@ -12,5 +12,6 @@ public interface CheckinService {
     Optional<Checkin> getCheckinById(UUID id);
     List<Checkin> getCheckinsByUserId(UUID userId);
     List<Checkin> getCheckinsBySessionId(UUID sessionId);
+    List<Checkin> getCheckinsByConferenceId(UUID conferenceId);
     boolean checkinExists(UUID userId, UUID sessionId);
 } 

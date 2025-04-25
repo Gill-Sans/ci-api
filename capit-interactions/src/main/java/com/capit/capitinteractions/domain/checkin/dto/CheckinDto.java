@@ -19,6 +19,7 @@ import java.util.UUID;
 public class CheckinDto {
     private UUID id;
     private UUID userId;
+    private UUID conferenceId;
     private UUID sessionId;
     private LocalDateTime checkinTime;
     
@@ -29,6 +30,7 @@ public class CheckinDto {
         return CheckinDto.builder()
                 .id(checkin.getId())
                 .userId(checkin.getUserId())
+                .conferenceId(checkin.getConferenceId())
                 .sessionId(checkin.getSessionId())
                 .checkinTime(checkin.getCheckinTime())
                 .build();

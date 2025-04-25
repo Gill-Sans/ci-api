@@ -24,5 +24,6 @@ public class Checkin {
     private UUID id;
     private UUID userId;
     private UUID sessionId;
+    private UUID conferenceId;
     private LocalDateTime checkinTime;
 } 

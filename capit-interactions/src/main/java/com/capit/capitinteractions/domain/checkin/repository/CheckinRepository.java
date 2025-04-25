@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface CheckinRepository extends JpaRepository<Checkin, UUID> {
     List<Checkin> findByUserId(UUID userId);
     List<Checkin> findBySessionId(UUID sessionId);
+    List<Checkin> findByConferenceId(UUID conferenceId);
     boolean existsByUserIdAndSessionId(UUID userId, UUID sessionId);
 } 

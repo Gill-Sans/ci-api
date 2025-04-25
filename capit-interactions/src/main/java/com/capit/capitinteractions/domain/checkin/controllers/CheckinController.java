@@ -5,7 +5,6 @@ import com.capit.capitinteractions.domain.checkin.dto.CheckinDto;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
 import com.capit.capitinteractions.domain.checkin.service.CheckinService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
