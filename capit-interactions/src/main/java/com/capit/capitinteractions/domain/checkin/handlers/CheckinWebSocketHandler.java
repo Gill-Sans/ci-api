@@ -7,9 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -20,7 +19,6 @@ import reactor.core.scheduler.Schedulers;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
 import reactor.core.publisher.Sinks;
-import com.capit.capitinteractions.domain.checkin.dto.CheckinDto;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,7 +26,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import com.capit.capitinteractions.domain.user.UserRepository;
 import com.capit.capitinteractions.domain.user.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +43,7 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
     private final String instanceId;
 
     @Override
-    public Mono<Void> handle(WebSocketSession session) {
+    public @NotNull Mono<Void> handle(@NotNull WebSocketSession session) {
         String conferenceId = extractConferenceId(session);
 
         Mono<WebSocketMessage> initialMessage = initialSnapshot(session, conferenceId);
@@ -81,7 +78,7 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
             .getCheckinsByConferenceId(UUID.fromString(conferenceId))
             .stream()
             .map(this::toSnapshotEntry)
-            .collect(Collectors.toList());
+            .toList();
         Map<String, Object> envelope = Map.of(
             "eventType", "INITIAL_SNAPSHOT",
             "conferenceId", conferenceId,

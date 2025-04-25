@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.kafka.receiver.KafkaReceiver;
-import reactor.kafka.receiver.ReceiverRecord;
 
 import jakarta.annotation.PostConstruct;
 
