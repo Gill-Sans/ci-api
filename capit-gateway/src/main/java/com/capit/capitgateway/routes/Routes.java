@@ -24,14 +24,15 @@ public class Routes {
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-            .route("ws_checkins", r -> r.path("/api/interactions/ws/checkins")
-                    .and().header("Upgrade", "WebSocket")
-                    .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
-                    .uri(getWsServiceUrl("capit-interactions", 8081)))
-            .route("interaction_service", r -> r.path("/api/interactions/**")
-                .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
-                .uri(getServiceUrl("capit-interactions", 8081)))
-
+            .route("ws_checkins", r -> r
+                    .path("/api/interactions/ws/checkins")
+                    .uri(getWsServiceUrl("capit-interactions", 8081))
+            )
+            .route("interaction_service", r -> r
+                    .path("/api/interactions/**")
+                    .filters(f -> f.addRequestHeader("X-Gateway-Auth","true"))
+                    .uri(getServiceUrl("capit-interactions", 8081))
+            )
             .route("schedule_service", r -> r.path("/api/schedule/**")
                 .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
                 .uri(getServiceUrl("capit-schedule", 8082)))

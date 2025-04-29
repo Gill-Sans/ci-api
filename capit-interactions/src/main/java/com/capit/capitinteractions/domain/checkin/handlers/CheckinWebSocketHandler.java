@@ -44,19 +44,37 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
 
     @Override
     public @NotNull Mono<Void> handle(@NotNull WebSocketSession session) {
-        String conferenceId = extractConferenceId(session);
+        String cid = extractConferenceId(session);
+        log.debug("🟢 WebSocket handle start for conferenceId={}", cid);
 
-        Mono<WebSocketMessage> initialMessage = initialSnapshot(session, conferenceId);
-        Flux<WebSocketMessage> eventMessages = eventFlux(session, conferenceId);
+        Mono<WebSocketMessage> initial = initialSnapshot(session, cid)
+                .doOnNext(msg -> log.debug("➡️ sending initial snapshot: {}", msg.getPayloadAsText()))
+                .doOnError(err -> log.error("❌ Failed to build INITIAL_SNAPSHOT", err))
+                .onErrorResume(err -> {
+                    // fallback empty snapshot so we stay alive
+                    String fallback = "{\"eventType\":\"INITIAL_SNAPSHOT\",\"conferenceId\":\"" + cid + "\",\"checkins\":[]}";
+                    log.warn("⚠️ Fallback initial snapshot: {}", fallback);
+                    return Mono.just(session.textMessage(fallback));
+                });
 
-        Mono<Void> send = session.send(Flux.concat(initialMessage, eventMessages));
+        Flux<WebSocketMessage> events = eventFlux(session, cid)
+                .doOnNext(msg -> log.debug("➡️ sending event: {}", msg.getPayloadAsText()))
+                .doOnError(err -> log.error("❌ Error in eventFlux", err))
+                .onErrorContinue((err, obj) -> log.warn("⚠️ Dropping bad event: {} because {}", obj, err.getMessage()));
+
+        Mono<Void> send = session.send(Flux.concat(initial, events))
+                .doOnError(err -> log.error("❌ WebSocket send pipeline error", err));
+
         Mono<Void> receive = session.receive()
-            .map(WebSocketMessage::getPayloadAsText)
-            .flatMap(this::parseRequest)
-            .flatMap(this::handleRequest)
-            .then();
+                .doOnError(err -> log.error("❌ WebSocket receive pipeline error", err))
+                .map(WebSocketMessage::getPayloadAsText)
+                .flatMap(this::parseRequest)
+                .flatMap(this::handleRequest)
+                .then();
 
-        return Mono.when(send, receive);
+        return Mono.when(send, receive)
+                .doOnError(err -> log.error("❌ overall WebSocket error", err))
+                .doOnSuccess(v -> log.debug("🔴 WebSocket handler terminates cleanly"));
     }
 
     private String extractConferenceId(WebSocketSession session) {
@@ -67,70 +85,73 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
 
     private Mono<WebSocketMessage> initialSnapshot(WebSocketSession session, String conferenceId) {
         return Mono.fromCallable(() -> buildInitialPayload(conferenceId))
-            .subscribeOn(Schedulers.boundedElastic())
-            .map(session::textMessage);
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(session::textMessage);
     }
 
     private String buildInitialPayload(String conferenceId) throws JsonProcessingException {
         List<Map<String, Object>> entries = checkinService
-            .getCheckinsByConferenceId(UUID.fromString(conferenceId))
-            .stream()
-            .map(this::toSnapshotEntry)
-            .toList();
+                .getCheckinsByConferenceId(UUID.fromString(conferenceId))
+                .stream()
+                .map(this::toSnapshotEntry)
+                .toList();
         Map<String, Object> envelope = Map.of(
-            "eventType", "INITIAL_SNAPSHOT",
-            "conferenceId", conferenceId,
-            "checkins", entries
+                "eventType", "INITIAL_SNAPSHOT",
+                "conferenceId", conferenceId,
+                "checkins", entries
         );
         return objectMapper.writeValueAsString(envelope);
     }
 
     private Map<String, Object> toSnapshotEntry(Checkin chk) {
         User user = userRepository.findById(chk.getUserId()).orElse(null);
+        // Ensure sessionId is never null: represent missing sessionId as empty string
+        String sessionId = chk.getSessionId() != null ? chk.getSessionId().toString() : "";
         return Map.of(
-            "userId", chk.getUserId().toString(),
-            "firstName", user != null ? user.getFirstName() : "",
-            "lastName", user != null ? user.getLastName() : "",
-            "sessionId", chk.getSessionId().toString()
+                "userId", chk.getUserId().toString(),
+                "firstName", user != null ? user.getFirstName() : "",
+                "lastName", user != null ? user.getLastName() : "",
+                "sessionId", sessionId
         );
     }
 
     private Flux<WebSocketMessage> eventFlux(WebSocketSession session, String conferenceId) {
         return checkinSink.asFlux()
-            .filter(evt -> evt.getConferenceId().equals(conferenceId))
-            .flatMap(evt -> {
-                try {
-                    String json = objectMapper.writeValueAsString(evt);
-                    return Mono.just(session.textMessage(json));
-                } catch (JsonProcessingException e) {
-                    log.error("Failed to serialize event {}", evt, e);
-                    return Mono.empty();
-                }
-            });
+                .filter(evt -> evt.getConferenceId().equals(conferenceId))
+                .flatMap(evt -> {
+                    try {
+                        String json = objectMapper.writeValueAsString(evt);
+                        return Mono.just(session.textMessage(json));
+                    } catch (JsonProcessingException e) {
+                        log.error("Failed to serialize event {}", evt, e);
+                        return Mono.empty();
+                    }
+                })
+                .doOnError(err -> log.error("Error in event flux", err));
     }
 
     private Mono<CreateCheckinRequest> parseRequest(String text) {
         return Mono.fromCallable(() -> objectMapper.readValue(text, CreateCheckinRequest.class))
-            .subscribeOn(Schedulers.boundedElastic());
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     private Mono<Void> handleRequest(CreateCheckinRequest request) {
         return Mono.fromCallable(() -> checkinService.createCheckin(request))
-            .subscribeOn(Schedulers.boundedElastic())
-            .flatMap(this::publishEvent)
-            .then();
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(this::publishEvent)
+                .then();
     }
 
     private Mono<Void> publishEvent(Checkin saved) {
         User user = userRepository.findById(saved.getUserId()).orElse(null);
         CheckinKafkaEvent event = CheckinKafkaEvent.builder()
-            .sessionId(saved.getSessionId().toString())
-            .conferenceId(saved.getConferenceId().toString())
-            .userId(saved.getUserId().toString())
-            .firstName(user != null ? user.getFirstName() : "")
-            .lastName(user != null ? user.getLastName() : "")
-            .instanceId(instanceId)
-            .build();
+                .sessionId(saved.getSessionId().toString())
+                .conferenceId(saved.getConferenceId().toString())
+                .userId(saved.getUserId().toString())
+                .firstName(user != null ? user.getFirstName() : "")
+                .lastName(user != null ? user.getLastName() : "")
+                .instanceId(instanceId)
+                .build();
 
         Sinks.EmitResult emitResult = checkinSink.tryEmitNext(event);
         if (emitResult.isFailure()) {
@@ -138,11 +159,11 @@ public class CheckinWebSocketHandler implements WebSocketHandler {
         }
 
         SenderRecord<String, CheckinKafkaEvent, Void> record = SenderRecord.create(
-            new ProducerRecord<>("checkin-events", event.getSessionId(), event),
-            null
+                new ProducerRecord<>("checkin-events", event.getSessionId(), event),
+                null
         );
         return kafkaSender.send(Mono.just(record))
-            .doOnError(err -> log.error("Kafka send failed", err))
-            .then();
+                .doOnError(err -> log.error("Kafka send failed", err))
+                .then();
     }
 }

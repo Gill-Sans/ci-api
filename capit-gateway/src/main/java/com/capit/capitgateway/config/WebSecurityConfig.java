@@ -22,8 +22,8 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfig()))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .pathMatchers("/api/interactions/ws/*").permitAll()
-                        .anyExchange().authenticated()
+                        .pathMatchers("/api/interactions/ws/**").permitAll()
+                        .anyExchange().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
