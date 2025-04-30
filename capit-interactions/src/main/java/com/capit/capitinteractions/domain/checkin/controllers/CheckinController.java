@@ -1,6 +1,6 @@
 package com.capit.capitinteractions.domain.checkin.controllers;
 
-import com.capit.capitinteractions.domain.checkin.requests.CreateCheckinRequest;
+import com.capit.capitinteractions.domain.checkin.requests.CheckinRequest;
 import com.capit.capitinteractions.domain.checkin.dto.CheckinDto;
 import com.capit.capitinteractions.domain.checkin.entity.Checkin;
 import com.capit.capitinteractions.domain.checkin.service.CheckinService;
@@ -16,45 +16,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/interaction/check-ins")
 public class CheckinController {
+
     private final CheckinService checkinService;
 
     @PostMapping
-    public ResponseEntity<CheckinDto> createCheckin(@RequestBody CreateCheckinRequest request) {
-        Checkin checkin = checkinService.createCheckin(request);
-        return ResponseEntity.ok(CheckinDto.fromEntity(checkin));
+    public ResponseEntity<CheckinDto> createCheckin(@RequestBody CheckinRequest request) {
+        CheckinDto dto = checkinService.createCheckin(request);
+        return ResponseEntity.ok(dto);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<CheckinDto> getCheckinById(@PathVariable UUID id) {
         return checkinService.getCheckinById(id)
-                .map(CheckinDto::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<CheckinDto>> getCheckinsByUserId(@PathVariable UUID userId) {
-        List<CheckinDto> checkins = checkinService.getCheckinsByUserId(userId)
-                .stream()
-                .map(CheckinDto::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(checkins);
+        List<CheckinDto> dtos = checkinService.getCheckinsByUserId(userId);
+        return ResponseEntity.ok(dtos);
     }
-    
+
     @GetMapping("/session/{sessionId}")
     public ResponseEntity<List<CheckinDto>> getCheckinsBySessionId(@PathVariable UUID sessionId) {
-        List<CheckinDto> checkins = checkinService.getCheckinsBySessionId(sessionId)
-                .stream()
-                .map(CheckinDto::fromEntity)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(checkins);
+        List<CheckinDto> dtos = checkinService.getCheckinsBySessionId(sessionId);
+        return ResponseEntity.ok(dtos);
     }
-    
+
+    @GetMapping("/conference/{conferenceId}")
+    public ResponseEntity<List<CheckinDto>> getCheckinsByConferenceId(@PathVariable UUID conferenceId) {
+        List<CheckinDto> dtos = checkinService.getCheckinsByConferenceId(conferenceId);
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/verify")
     public ResponseEntity<Boolean> verifyCheckin(
-            @RequestParam UUID userId, 
+            @RequestParam UUID userId,
             @RequestParam UUID sessionId) {
-        boolean hasCheckedIn = checkinService.checkinExists(userId, sessionId);
-        return ResponseEntity.ok(hasCheckedIn);
+        boolean exists = checkinService.checkinExists(userId, sessionId);
+        return ResponseEntity.ok(exists);
     }
 }

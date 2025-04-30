@@ -193,6 +193,48 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "steven",
+      "email": "steven.uytterhoeven@email.com",
+      "firstName": "Steven",
+      "lastName": "Uytterhoeven",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "Nele",
+      "email": "nele.schoonheere@email.com",
+      "firstName": "Nele",
+      "lastName": "Schoonheere",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "Kevin",
+      "email": "Kevin.dewit@email.com",
+      "firstName": "Kevin",
+      "lastName": "Dewit",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ]
     }
   ]
 }

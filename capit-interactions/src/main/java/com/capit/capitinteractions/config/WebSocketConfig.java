@@ -1,30 +1,24 @@
 package com.capit.capitinteractions.config;
 
-import org.springframework.context.annotation.Bean;
+import com.capit.capitinteractions.domain.checkin.handlers.CheckinWebsocketHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.reactive.socket.WebSocketHandler;
-import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
-
-import java.util.Map;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
-@EnableWebFlux
-public class WebSocketConfig {
+@EnableWebSocket
+@RequiredArgsConstructor
+public class WebSocketConfig implements WebSocketConfigurer {
+    private final CheckinWebsocketHandler checkinWebSocketHandler;
 
-    @Bean
-    public HandlerMapping webSocketMapping(WebSocketHandler checkinWebSocketHandler) {
-        return new SimpleUrlHandlerMapping(
-            Map.of("/api/interactions/ws/checkins", checkinWebSocketHandler),
-            Ordered.HIGHEST_PRECEDENCE
-        );
-    }
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(checkinWebSocketHandler, "/api/interactions/ws/checkins")
+            .addInterceptors(new HttpSessionHandshakeInterceptor())
+            .setAllowedOrigins("http://localhost:4200");
 
-    @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
-        return new WebSocketHandlerAdapter();
     }
-} 
+}

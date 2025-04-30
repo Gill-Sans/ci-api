@@ -16,4 +16,4 @@ public class CheckinKafkaEvent {
     private String firstName;
     private String lastName;
     private String instanceId;
-} 
+}
