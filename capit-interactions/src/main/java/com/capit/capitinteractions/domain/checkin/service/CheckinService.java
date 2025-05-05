@@ -16,4 +16,5 @@ public interface CheckinService {
     List<CheckinDto> getCheckinsBySessionId(UUID sessionId);
     List<CheckinDto> getCheckinsByConferenceId(UUID conferenceId);
     boolean checkinExists(UUID userId, UUID sessionId);
+    void deleteCheckin(UUID id);
 }

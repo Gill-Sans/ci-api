@@ -2,6 +2,7 @@ package com.capit.capitinteractions.domain.checkin.handlers;
 
 import com.capit.capitinteractions.domain.checkin.dto.CheckinDto;
 import com.capit.capitinteractions.domain.checkin.dto.CheckinEventMessage;
+import com.capit.capitinteractions.domain.checkin.dto.CheckinType;
 import com.capit.capitinteractions.domain.checkin.requests.CheckinRequest;
 import com.capit.capitinteractions.domain.checkin.dto.EventType;
 import com.capit.capitinteractions.domain.checkin.dto.InitialSnapshotEvent;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,8 +61,31 @@ public class CheckinWebsocketHandler extends TextWebSocketHandler {
         log.info("Received message from {}: {}", session.getId(), message.getPayload());
         try {
             CheckinRequest req = objectMapper.readValue(message.getPayload(), CheckinRequest.class);
-            CheckinDto dto = checkinService.createCheckin(req);
-            broadcastCheckinEvent(dto);
+            CheckinDto dto;
+            if (req.type() == CheckinType.CHECK_IN) {
+                log.info("Checkin request: {}", req);
+                dto = checkinService.createCheckin(req);
+                broadcastCheckinEvent(dto);
+            } else if (req.type() == CheckinType.CHECK_OUT) {
+                log.info("Checkout request: {}", req);
+                // Find existing checkin for this user and session
+                List<CheckinDto> checkins = checkinService.getCheckinsBySessionId(req.sessionId());
+                Optional<CheckinDto> existing = checkins.stream()
+                    .filter(c -> c.getUserId().equals(req.userId()))
+                    .findFirst();
+                if (existing.isEmpty()) {
+                    log.warn("Checkin not found for user {} and session {}", req.userId(), req.sessionId());
+                    return;
+                }
+                dto = existing.get();
+                // Delete the checkin
+                checkinService.deleteCheckin(dto.getId());
+                // Broadcast checkout event
+                broadcastCheckoutEvent(dto);
+            } else {
+                log.warn("Unknown checkin type: {}", req.type());
+                return;
+            }
         } catch (Exception e) {
             log.error("Failed to handle incoming message", e);
         }
@@ -106,6 +131,21 @@ public class CheckinWebsocketHandler extends TextWebSocketHandler {
             }
         } catch (IOException e) {
             log.error("Failed to broadcast checkin event", e);
+        }
+    }
+
+    private void broadcastCheckoutEvent(CheckinDto dto) {
+        try {
+            CheckinEventMessage event = new CheckinEventMessage(EventType.CHECK_OUT, dto);
+            String payload = objectMapper.writeValueAsString(event);
+            TextMessage msg = new TextMessage(payload);
+            for (WebSocketSession s : sessions) {
+                if (s.isOpen()) {
+                    s.sendMessage(msg);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Failed to broadcast checkout event", e);
         }
     }
 }

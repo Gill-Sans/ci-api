@@ -94,4 +94,13 @@ public class CheckinServiceImpl implements CheckinService {
     public boolean checkinExists(UUID userId, UUID sessionId) {
         return checkinRepository.existsByUserIdAndSessionId(userId, sessionId);
     }
+
+    // delete checkin
+    @Override
+    @Transactional
+    public void deleteCheckin(UUID id) {
+        Checkin checkin = checkinRepository.findById(id)
+                .orElseThrow(() -> new BaseRuntimeException("Checkin not found with id: " + id, HttpStatus.NOT_FOUND));
+        checkinRepository.delete(checkin);
+    }
 }
