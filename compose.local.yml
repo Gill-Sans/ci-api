@@ -7,18 +7,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-    command: >
-      bash -c "docker-entrypoint.sh postgres &
-      sleep 10;
-      psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE keycloak;\" 2>/dev/null || true;
-      psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE schedules;\" 2>/dev/null || true;
-      psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE interactions;\" 2>/dev/null || true;
-      psql -v ON_ERROR_STOP=1 --username=postgres --dbname=postgres -c \"CREATE DATABASE users;\" 2>/dev/null || true;
-      wait"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./podman/postgres/init:/docker-entrypoint-initdb.d
     networks:
       - capit
 
@@ -74,7 +67,7 @@ services:
       - capit
 
   kafka-ui:
-    image: provectuslabs/kafka-ui:latest
+    image: docker.io/provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
       - "9095:8080"

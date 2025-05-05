@@ -1,0 +1,4 @@
+CREATE DATABASE keycloak;
+CREATE DATABASE schedules;
+CREATE DATABASE interactions;
+CREATE DATABASE users;
