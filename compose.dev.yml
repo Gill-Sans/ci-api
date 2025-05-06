@@ -51,7 +51,6 @@ services:
       - --import-realm
       - --proxy=edge
       - --hostname-strict=false
-      - --optimized
     ports:
       - "8180:8080"
     volumes:
