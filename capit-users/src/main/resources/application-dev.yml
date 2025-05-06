@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: capit-users
+  datasource:
+    url: jdbc:postgresql://192.168.0.53:5432/users
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  kafka:
+    bootstrap-servers: 192.168.0.53:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+server:
+  port: 8080
