@@ -26,22 +26,28 @@ services:
     image: quay.io/keycloak/keycloak:26.1.4
     container_name: keycloak
     environment:
-      - KC_HTTP_ENABLED=true
+      # ————————————————————————————————————————————————————
+      # Admin user (bootstrapped)
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-      - KC_DB_VENDOR=postgres
-      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
-      - KC_DB_USERNAME=postgres
-      - KC_DB_PASSWORD=password
+      # ————————————————————————————————————————————————————
+      # Proxy settings (edge-terminated TLS)
       - KC_HOSTNAME=https://capit-dev.keycloak.mertenshome.com
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
+      # ————————————————————————————————————————————————————
+      # Database settings
+      - KC_DB=postgres                         # selects the Postgres driver
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=password
+      # ————————————————————————————————————————————————————
     command:
-      - start-dev
+      - start
       - --import-realm
       - --proxy=edge
-      - --proxy-headers=xforwarded
+      - --hostname-strict=false
     ports:
       - "8180:8080"
     volumes:
