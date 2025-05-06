@@ -22,32 +22,36 @@ services:
     networks:
       - capit
 
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.4
     container_name: keycloak
     environment:
-      # ————————————————————————————————————————————————————
-      # Admin user (bootstrapped)
+      # — admin user
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-      # ————————————————————————————————————————————————————
-      # Proxy settings (edge-terminated TLS)
+
+      # — tell Keycloak its public URL & proxy setup
       - KC_HOSTNAME=https://capit-dev.keycloak.mertenshome.com
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
-      # ————————————————————————————————————————————————————
-      # Database settings
-      - KC_DB=postgres                         # selects the Postgres driver
+
+      # — Postgres
+      - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=password
-      # ————————————————————————————————————————————————————
     command:
       - start
+      # ── new flags ───────────────────────────────────────────
+      - --http-enabled=true
+      - --http-port=8080
+      # ── existing flags ───────────────────────────────────────
       - --import-realm
       - --proxy=edge
       - --hostname-strict=false
+      - --optimized
     ports:
       - "8180:8080"
     volumes:
@@ -57,6 +61,7 @@ services:
     restart: unless-stopped
     networks:
       - capit
+
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5
