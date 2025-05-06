@@ -22,9 +22,9 @@
         "http://192.168.0.56/*",
         "http://192.168.0.56/",
         "http://192.168.0.56",
-        "http://capit.mertenshome.com/*",
-        "http://capit.mertenshome.com/",
-        "http://capit.mertenshome.com"
+        "https://capit-dev.mertenshome.com/*",
+        "https://capit-dev.mertenshome.com/",
+        "https://capit-dev.mertenshome.com"
       ],
       "webOrigins": [
         "*"

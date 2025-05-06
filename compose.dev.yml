@@ -30,11 +30,18 @@ services:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
       - KC_DB_VENDOR=postgres
-      - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=password
-    command: ["start-dev", "--import-realm"]
+      - KC_HOSTNAME=https://capit-dev.keycloak.mertenshome.com
+      - KC_HOSTNAME_STRICT=false
+      - KC_PROXY=edge
+      - KC_PROXY_HEADERS=xforwarded
+    command:
+      - start-dev
+      - --import-realm
+      - --proxy=edge
+      - --proxy-headers=xforwarded
     ports:
       - "8180:8080"
     volumes:
