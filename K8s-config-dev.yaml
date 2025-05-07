@@ -229,8 +229,9 @@ metadata:
   name: capit-gateway
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx   # you can leave this or remove it
 spec:
+  ingressClassName: nginx
   rules:
     - host: gateway.mertenshome.com
       http:
@@ -242,3 +243,4 @@ spec:
                 name: capit-gateway
                 port:
                   number: 9001
+
