@@ -89,7 +89,7 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: "password"
             - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
-              value: "http://192.168.0.53:8180/realms/capit"
+              value: "https://capit-dev.keycloak.mertenshome.com/realms/capit"
 ---
 # ─────────────────────────────────────────────────────────────────────────────
 # 2) Users
