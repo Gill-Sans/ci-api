@@ -233,7 +233,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: gateway.mertenshome.com
+    - host: capit-dev.gateway.mertenshome.com
       http:
         paths:
           - path: /
