@@ -131,6 +131,8 @@ spec:
               value: "postgres"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "password"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "192.168.0.53:29092"
 ---
 # ─────────────────────────────────────────────────────────────────────────────
 # 3) Interactions
