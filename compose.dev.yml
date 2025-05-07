@@ -22,32 +22,24 @@ services:
     networks:
       - capit
 
-
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.4
     container_name: keycloak
     environment:
-      # — admin user
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-
-      # — tell Keycloak its public URL & proxy setup
       - KC_HOSTNAME=https://capit-dev.keycloak.mertenshome.com
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
-
-      # — Postgres
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
       - KC_DB_USERNAME=postgres
       - KC_DB_PASSWORD=password
     command:
       - start
-      # ── new flags ───────────────────────────────────────────
       - --http-enabled=true
       - --http-port=8080
-      # ── existing flags ───────────────────────────────────────
       - --import-realm
       - --proxy=edge
       - --hostname-strict=false
@@ -60,7 +52,6 @@ services:
     restart: unless-stopped
     networks:
       - capit
-
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.5
@@ -79,8 +70,9 @@ services:
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://192.168.0.53:29092
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     depends_on:
       - zookeeper
@@ -101,7 +93,7 @@ services:
       - source: axonserver-properties
         target: /axonserver/config/axonserver.properties
     environment:
-      - 'AXONIQ_AXONSERVER_STANDALONE=TRUE'
+      - AXONIQ_AXONSERVER_STANDALONE=TRUE
     ports:
       - "8024:8024"
       - "8124:8124"
