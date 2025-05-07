@@ -48,7 +48,6 @@ spec:
     - port: 8080
       targetPort: 8080
 ---
-
 # ─────────────────────────────────────────────────────────────────────────────
 # 1) Gateway
 # ─────────────────────────────────────────────────────────────────────────────
@@ -63,8 +62,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: capit-gateway
@@ -80,7 +79,6 @@ spec:
           image: ghcr.io/gill-sans/ci-api/capit-gateway:latest
           ports:
             - containerPort: 9001
-              hostPort: 9001
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
@@ -107,8 +105,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: capit-users
@@ -148,8 +146,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: capit-interactions
@@ -191,8 +189,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: capit-schedule
@@ -229,7 +227,7 @@ metadata:
   name: capit-gateway
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: nginx   # you can leave this or remove it
+    kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: nginx
   rules:
@@ -243,4 +241,3 @@ spec:
                 name: capit-gateway
                 port:
                   number: 9001
-
