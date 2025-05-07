@@ -30,11 +30,5 @@ spring:
 server:
   port: 8081
 
-logging:
-  level:
-    org.springframework.web.socket: TRACE
-    org.springframework.web.reactive.socket: TRACE
-    org.springframework.web.reactive.handler: TRACE
-
 
 
