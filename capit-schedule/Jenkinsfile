@@ -20,7 +20,7 @@ pipeline {
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [
                         [$class: 'PathRestriction',
-                            includedRegions: '${SERVICE_NAME}/.*'
+                            includedRegions: 'capit-schedule/.*'
                         ]
                     ],
                     submoduleCfg: [],
