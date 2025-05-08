@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(checkinWebSocketHandler, "/api/interactions/ws/checkins")
             .addInterceptors(new HttpSessionHandshakeInterceptor())
-            .setAllowedOrigins("http://localhost:4200", "http://192.168.0.56", "http://capit.mertenshome.com");
+            .setAllowedOrigins("http://localhost:4200", "http://192.168.0.56", "https://capit-dev.mertenshome.com");
 
     }
 }
