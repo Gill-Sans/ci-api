@@ -77,6 +77,7 @@ spec:
       containers:
         - name: capit-gateway
           image: ghcr.io/gill-sans/ci-api/capit-gateway:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 9001
           env:
@@ -120,6 +121,7 @@ spec:
       containers:
         - name: capit-users
           image: ghcr.io/gill-sans/ci-api/capit-users:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -163,6 +165,7 @@ spec:
       containers:
         - name: capit-interactions
           image: ghcr.io/gill-sans/ci-api/capit-interactions:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
           env:
@@ -206,6 +209,7 @@ spec:
       containers:
         - name: capit-schedule
           image: ghcr.io/gill-sans/ci-api/capit-schedule:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
           env:
