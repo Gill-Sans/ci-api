@@ -15,14 +15,26 @@ import java.util.List;
 @Configuration
 public class WebSecurityConfig {
 
+    private final String[] freeResources = {
+            "/favicon.ico",
+            "/swagger-ui.html",
+            "/api-docs/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/docs/**",
+            "/api/interactions/ws/**",
+    };
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfig()))
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(freeResources).permitAll()
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .pathMatchers("/api/interactions/ws/**").permitAll()
+
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

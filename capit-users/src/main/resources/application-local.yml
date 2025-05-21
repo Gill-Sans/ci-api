@@ -16,3 +16,9 @@ spring:
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 server:
     port: 8080
+
+springdoc:
+    swagger-ui:
+        path: /swagger-ui.html
+    api-docs:
+        path: /api-docs

@@ -41,6 +41,26 @@ public class Routes {
                 .filters(f -> f.addRequestHeader("X-Gateway-Auth", "true"))
                 .uri(getServiceUrl("capit-users", 8080)))
 
+            .route("user_service_swagger", r -> r.path("/docs/user-service/v3/api-docs/**")
+                .filters(f -> f
+                        .addRequestHeader("X-Gateway-Auth", "true")
+                        .rewritePath("/docs/user-service/v3/api-docs(?<segment>/?.*)", "/api-docs${segment}")
+                )
+                .uri(getServiceUrl("capit-users", 8080)))
+
+            .route("interaction_service_swagger", r -> r.path("/docs/interactions-service/v3/api-docs/**")
+                .filters(f -> f
+                        .addRequestHeader("X-Gateway-Auth", "true")
+                        .rewritePath("/docs/interactions-service/v3/api-docs(?<segment>/?.*)", "/api-docs${segment}")
+                )
+                .uri(getServiceUrl("capit-interactions", 8081)))
+
+            .route("schedule_service_swagger", r -> r.path("/docs/schedule-service/v3/api-docs/**")
+                .filters(f -> f
+                        .addRequestHeader("X-Gateway-Auth", "true")
+                        .rewritePath("/docs/schedule-service/v3/api-docs(?<segment>/?.*)", "/api-docs${segment}")
+                )
+                .uri(getServiceUrl("capit-schedule", 8082)))
             .build();
     }
 }

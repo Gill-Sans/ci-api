@@ -29,12 +29,14 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 server:
   port: 8081
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
 
 logging:
   level:
     org.springframework.web.socket: TRACE
     org.springframework.web.reactive.socket: TRACE
     org.springframework.web.reactive.handler: TRACE
-
-
-
