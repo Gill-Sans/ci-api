@@ -21,7 +21,7 @@ services:
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
       - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-      - KC_HOSTNAME=https://capit-dev.keycloak.mertenshome.com
+      - KC_HOSTNAME=http://localhost:8180
       - KC_HOSTNAME_STRICT=false
       - KC_PROXY=edge
       - KC_PROXY_HEADERS=xforwarded
